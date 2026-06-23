@@ -1,7 +1,0 @@
-{
-  "files_written": [
-    "outputs/response.md",
-    "outputs/manifest.json"
-  ],
-  "description": "Bootstrap report for eval 2: validated existing context backbone, identified missing wiring (AGENTS.md, .agents/skills/, skills-lock.json, memory.md), produced Bootstrap Report with context file status, skills wiring check, execution state, risks, and recommended next action."
-}

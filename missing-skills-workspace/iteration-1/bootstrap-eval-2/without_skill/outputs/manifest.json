@@ -1,9 +1,0 @@
-{
-  "eval_id": 2,
-  "eval_name": "bootstrap-eval-2",
-  "run_type": "baseline",
-  "files_written": [
-    "outputs/response.md"
-  ],
-  "notes": "No project-root files written — none of the expected context files (project-overview.md, architecture.md, etc.) existed in the workspace to validate or modify. Response summarizes missing wiring and recommends next steps."
-}
