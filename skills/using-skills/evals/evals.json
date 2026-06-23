@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "Hey, I just joined this repo and I'm completely lost. There's no AGENTS.md, no context/ folder, no .agents/skills/. How do I even start?",
-      "expected_output": "Routes to the bootstrap skill because the project lacks agentic context files. Announces which skill before acting.",
+      "expected_output": "Routes to the bootstrap skill because the project lacks context files. Announces which skill before acting.",
       "files": [],
       "expectations": [
         "Routes to bootstrap (or describes bootstrapping the context system) and explains why",
@@ -37,6 +37,60 @@
         "Does NOT begin writing or editing code immediately",
         "Mentions the need to align on language/decisions before producing a plan",
         "Does NOT route to multiple skills simultaneously — picks one and announces"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I'm working on a tiny Node.js CLI tool. There's no AGENTS.md in the repo. I want to add a `--verbose` flag that prints every step the tool takes.",
+      "expected_output": "Works standalone — no project-level config required. Routes to architect for a new feature, applies universal guards (verify-before-claim, branch lifecycle, announce), and surfaces a recommendation to scaffold context/ if the project accumulates rules.",
+      "files": [],
+      "expectations": [
+        "Functions correctly without any project-level config file being present",
+        "Still routes via the routing map (architect for a new feature) and announces the choice",
+        "Applies at least one universal guard explicitly (e.g., recommends a branch, or says it will run a test before claiming done)",
+        "Does NOT invent project-specific rules out of thin air (no styling system, no token names, no test framework dictates)",
+        "Suggests reading whatever context exists (README.md, package.json) before planning",
+        "Does NOT skip routing and just start editing the CLI source"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Production is on fire. Tests are red, customers are seeing 500s. Drop everything and just fix it. There's no AGENTS.md in this repo, just a bunch of Python services.",
+      "expected_output": "Even in the absence of project-level config, the skill applies universal guards: does not skip verification (the fix must be verified before claiming done), uses recover (not architect) for bug fixes, announces the skill, and respects the destructive-action gate. Also surfaces that a real incident deserves a real runbook, not an AI agent freelancing on prod.",
+      "files": [],
+      "expectations": [
+        "Routes to recover (bug/test-failure) — NOT architect — because production failures are root-cause work, not new features",
+        "Does NOT proceed without verification — states that the fix will be tested in the current turn before claiming done",
+        "Asks for confirmation before any destructive action (rollback, force-push, schema change, etc.) — even under time pressure",
+        "Announces the skill with one short line",
+        "Does NOT silently invent project rules (no Python framework, no service name, no test framework prescribed) — stays tech-agnostic at the meta level",
+        "Surfaces the meta concern: a real prod incident may need humans, runbooks, and on-call — not an agent freelancing"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I want to add a 'project activity feed' panel to the project detail page. It should show the last 50 events: task created, task completed, member joined, file uploaded, comment posted. The panel needs a timeline UI with timestamps, avatars, and infinite scroll. We have a small React + Tailwind project.",
+      "expected_output": "Routes to architect for the new feature. Recognizes the UI component is a real part of the feature, not a polish step. In the chain, mentions loading impeccable *during* implementation (or as part of the chain) for the timeline component. Triggers architect persistence mode if 3+ files or 2+ packages — which this likely is (component, hook, API endpoint, types). Does not start coding before architect approval.",
+      "files": [],
+      "expectations": [
+        "Routes to architect (the new feature), not directly to impeccable",
+        "Recognizes the UI is part of the feature — places impeccable in the chain as something to load DURING implementation, not after review",
+        "Triggers architect persistence mode (3+ files / 2+ packages) — mentions docs/designs/ and docs/plans/ as the deliverables",
+        "Stops at the architect approval gate — does NOT start coding the timeline component",
+        "Does NOT invent project-specific styling rules (no assumed token library, no assumed hex) when no project context/ is mentioned",
+        "Does NOT route to multiple skills simultaneously — architect first, then impeccable during impl"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "I'm rewriting the search bar — currently it shows 3 hardcoded results. I want it to be a real autocomplete with debouncing, keyboard navigation, and a11y. It's pure UI, no backend changes.",
+      "expected_output": "Routes to architect (new feature, behavior change), and recognizes impeccable as the right skill for the UI design *during* implementation. Does not skip straight to impeccable because the search behavior is a feature, not just visual polish. Triggers architect approval gate before coding.",
+      "files": [],
+      "expectations": [
+        "Routes to architect (the new feature), not directly to impeccable — because autocomplete + debouncing + a11y is a behavior change, not just visual polish",
+        "Mentions impeccable as the skill to load during implementation for the UI design (timeline, debounce indicator, a11y patterns)",
+        "Stops at the architect approval gate — does NOT start coding",
+        "Distinguishes 'UI polish' (route #4 = impeccable alone) from 'new feature with UI' (route #3 = architect with impeccable during impl)"
       ]
     }
   ]

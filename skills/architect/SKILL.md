@@ -217,6 +217,8 @@ Present the plan to the developer. Wait for them to confirm before anything gets
 
 Only after explicit confirmation does implementation begin.
 
+**If the plan includes UI work,** the implement step should load `impeccable` for the UI portion. `impeccable` produces ready-to-ship design code (tokens, components, a11y, motion); the rest of the implementation is normal coding. After the UI lands, `imprint` captures the new visual patterns into `context/ui-registry.md`. Treat UI as a first-class part of the plan, not a polish pass to add at the end.
+
 ## Step 5.5 — Persistence Mode (for non-trivial work)
 
 The inline plan above is fine for small features. For anything non-trivial, write the design and plan to disk so the next session (or a human reviewer) can pick up where you left off. **Persistence follows the same two-phase gate as the inline flow: write the design first, wait for approval, then write the plan.**

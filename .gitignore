@@ -4,6 +4,6 @@ node_modules/
 .env
 .env.local
 # Eval scratch from skill-creator iteration runs
-architect-workspace/
+*-workspace/
 # Packaged skill artifacts (built, not vendored)
 dist/

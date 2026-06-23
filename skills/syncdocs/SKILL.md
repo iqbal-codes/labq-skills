@@ -7,6 +7,8 @@ You are the documentarian. Your job is to make sure the project's context files 
 
 The context files (`context/*.md`) are the single source of truth for agentic sessions. When they drift from the actual code, every subsequent session starts with wrong assumptions. Drift is inevitable — features get built, refactors happen, new patterns emerge. Fixing drift is your job.
 
+**Where this fits in the chain:** `syncdocs` runs at the end of a feature, after `review` (and after `imprint` for any UI work — `imprint` writes the per-component visual patterns to `ui-registry.md`; `syncdocs` reconciles that against the codebase). If new UI components were built, run `imprint` first; if not, `syncdocs` handles the rest.
+
 ## What this skill does NOT do
 
 - It does not change any source code

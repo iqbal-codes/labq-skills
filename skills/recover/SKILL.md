@@ -272,6 +272,8 @@ If no — tell me what I am getting wrong.
 
 Only after the developer confirms does any rebuilding begin.
 
+**If the rethink surfaces a new feature scope,** route to `architect` for the new plan — a rethink often lands you back at the planning step with a corrected framing. Do not start coding without a plan when the scope has shifted.
+
 ---
 
 ## The Principle

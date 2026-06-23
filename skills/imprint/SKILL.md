@@ -11,6 +11,8 @@ This skill fixes that. Run it after building any UI component. It reads what was
 
 One command. Run it every time. That is the whole system.
 
+**Where this fits in the chain:** `imprint` runs *after* `impeccable` (or any UI work) lands a new component, and *before* `syncdocs` reconciles. `imprint` writes per-component entries; `syncdocs` validates that the registry is consistent with the codebase as a whole. If inconsistencies surface during imprint, flag them — `syncdocs` will pick them up.
+
 ---
 
 ## How to Invoke
