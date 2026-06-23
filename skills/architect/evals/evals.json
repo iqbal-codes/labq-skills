@@ -4,41 +4,73 @@
     {
       "id": 1,
       "prompt": "I want to add a 'duplicate project' feature. Users should be able to clone an existing project with all its tasks and members. Where should it live?",
-      "expected_output": "Routes the user through Step 1 (context), Step 2 (language alignment: project, task, member, duplicate), Step 3 (decisions: deep vs shallow clone, naming collision, permissions), Step 4 ('Blueprint ready'), Step 4.5 (pressure-test), Step 4.6 (self-review), Step 5 (plan), Step 5.5 (persistence check), Step 6 (execution mode menu). Does NOT skip directly to writing code or proposing architecture without alignment.",
+      "expected_output": "Routes through Step 1 (context), Step 2 (language alignment: project, task, member, duplicate), Step 3 (decisions: deep vs shallow clone, naming collision, permissions), Step 4.5 (spawns challenge subagent, addresses or surfaces Showstoppers), Step 4.6 (self-review), Step 4.7 (Design Summary + Risk Register + stop). Does NOT draft the implementation plan, write to docs/plans/, or present the execution mode menu in the same turn.",
       "files": [],
       "expectations": [
         "Asks language-alignment questions before proposing implementation",
         "Surfaces at least 3 meaningful decisions (data ownership, naming, permissions, etc.)",
-        "Eventually says 'Blueprint ready' or equivalent gate before producing the plan",
-        "Presents an implementation plan with files/steps, not just a description",
-        "After plan confirmation, presents the Step 6 execution-mode menu with 4 options",
-        "Does NOT skip Step 6 and jump straight into code without a mode choice"
+        "Spawns a challenge subagent (Step 4.5) before presenting the design to the developer",
+        "Addresses resolvable Showstoppers OR surfaces unresolvable ones as 'Open Showstoppers' in the handoff",
+        "At Step 4.7 produces a Design Summary with Risk Register appended and stops — does NOT draft the plan in the same turn",
+        "Explicitly hands control back with a phrase like 'design ready for review' or 'awaiting design approval'",
+        "Does NOT present the implementation plan or execution mode menu before the developer approves the design",
+        "Does NOT write to docs/plans/ before the developer approves the design"
       ]
     },
     {
       "id": 2,
       "prompt": "Tiny typo fix: the 'Logiin' heading should be 'Login'.",
-      "expected_output": "Skips architect entirely. Notes it's a trivial fix and proceeds without a multi-step plan, language alignment, or execution mode menu.",
+      "expected_output": "Skips architect entirely. Notes it's a trivial fix and proceeds without a multi-step plan, language alignment, challenge subagent, or execution mode menu.",
       "files": [],
       "expectations": [
         "Does NOT run Steps 1-6 of architect",
         "Recognizes this as a one-line fix and skips the skill",
-        "Does NOT ask language-alignment questions or propose multi-file changes",
-        "May mention to just make the change"
+        "Does NOT ask language-alignment questions or propose multi-file changes (negated mentions are OK)",
+        "May mention to just make the change",
+        "Does NOT spawn a challenge subagent (it would be wasted work for a typo)"
       ]
     },
     {
       "id": 3,
       "prompt": "We need to add role-based access control across the app. 6 user roles, ~40 protected routes, complex permission inheritance. Will take weeks.",
-      "expected_output": "Recognizes the scope and triggers persistence mode (Step 5.5). Writes design + plan to docs/designs/ and docs/plans/. Surfaces many decisions. Does NOT try to cover everything inline in chat.",
+      "expected_output": "Recognizes the scope and triggers persistence mode (Step 5.5). Surfaces many decisions. Spawns challenge subagent and resolves Showstoppers. Reaches Step 4.7 with a Design Summary + Risk Register. STOPS and waits for design approval. As the FIRST action of persistence mode, writes the design file to docs/designs/<slug>-design.md with the Risk Register appended and a ## Status block. The chat reply points to the file path; it does NOT paste the full design. STOPS AGAIN and waits. Does NOT write the plan file.",
       "files": [],
       "expectations": [
         "Recognizes this is large enough to warrant persistence mode",
-        "Mentions writing a design doc to docs/designs/",
-        "Mentions writing a plan doc to docs/plans/",
+        "Spawns challenge subagent and resolves Showstoppers before presenting the design",
+        "Reaches Step 4.7 with a Design Summary + Risk Register and stops before writing any plan",
+        "Writes the design file to docs/designs/ as the first action of Step 4.7 (chat reply points to the file, does not paste full design)",
+        "Design file includes language, decisions, assumptions, Risk Register, and a ## Status block",
+        "Plan file is NOT written in the same turn as the design file",
         "Surfaces decisions about RBAC model (role hierarchy, permission inheritance, route guard placement, etc.)",
         "Uses delta notation or acknowledges that future updates will use ADDED/MODIFIED/REMOVED markers",
         "Does NOT try to plan the whole thing inline in one chat response"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Add a 'login with Google' button to the homepage. Use OAuth. We already have user accounts.",
+      "expected_output": "The model should align on language, surface a design, and the challenge subagent should catch an obvious hole — likely that the design doesn't address: token storage/session strategy, what happens to existing user accounts when they first log in via Google (account linking), logout flow, or revocation. The challenge subagent's Showstoppers (or at least Concerns) section should flag at least one of these. The model then either addresses the showstopper in a revised design OR the final Risk Register shows it as a Concern the developer should know about.",
+      "files": [],
+      "expectations": [
+        "Model produces a Design Summary covering OAuth integration",
+        "Spawns a challenge subagent and the resulting Risk Register is visible in the output",
+        "The Risk Register flags at least one of: account linking strategy, session/token storage, logout, or revocation handling",
+        "If the showstopper is real, the model either revises the design or the final register has it as a Concern that the developer can see",
+        "Does NOT just rubber-stamp the OAuth design without flagging the account-linking or session concerns"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Add a 'user profile page' at /users/:id that shows the user's name, avatar, bio, and recent activity. We use Postgres for storage and React for the frontend.",
+      "expected_output": "The model aligns on language, surfaces decisions, and a challenge subagent is spawned. The subagent should produce a Showstopper or Concern about 'recent activity' — what counts as activity, where it comes from, how far back, performance implications, N+1 queries on profile loads. Because the answer IS in scope (model can decide on a reasonable interpretation), the model should either revise the design to scope 'recent activity' explicitly OR the final Risk Register has it as a Concern. Tests the 'showstopper loop, resolvable case' path.",
+      "files": [],
+      "expectations": [
+        "Model produces a Design Summary covering user profile page",
+        "Spawns a challenge subagent and the resulting Risk Register is visible",
+        "The Risk Register flags at least one concern about 'recent activity' (scope, source, performance, N+1)",
+        "The model either revises the design to address the concern OR lists it as a Concern in the final register with a one-line scoping decision",
+        "Does NOT just accept 'recent activity' as a black box without challenge"
       ]
     }
   ]

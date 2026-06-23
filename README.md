@@ -21,6 +21,12 @@ Why this is worth doing:
   — architect approval before non-trivial code, `review` before `syncdocs`
   or `remember`, Critical-severity blocks until resolved. Skills make the
   gate enforceable instead of "we should probably check."
+- **Design before code, with a second pair of eyes.** The `architect` skill
+  does not let the model write the plan that just self-approved the design.
+  A challenge subagent produces a Risk Register (Showstoppers / Concerns /
+  Acceptable) on the design before it reaches the human, and the plan is only
+  drafted after the human approves the design. The check is structural, not
+  rhetorical.
 - **Verification as a first-class step.** The verification rule is hard:
   quote the actual command output in the same turn as the success claim.
   This is how agentic code stops shipping false "done" reports.
@@ -47,11 +53,24 @@ using-skills  ──►  picks the right specialized skill
 AGENTS.md context read order  ──►  context/ files are the project's OS
    │
    ▼
-skill chain (architect → implement → review → impeccable → syncdocs → remember)
+architect
+  ├─ Step 1: research unfamiliar libs (skip for well-known territory)
+  ├─ language alignment + decisions
+  ├─ challenge subagent  ──►  Risk Register (Showstoppers / Concerns / Acceptable)
+  ├─ ★ DESIGN REVIEW GATE  ──►  human approves design before plan is written
+  └─ plan + execution mode menu  ──►  ★ PLAN GATE  ──►  human approves plan
+   │
+   ▼
+skill chain (implement → review → impeccable → syncdocs → remember)
    │
    ▼
 verification in this turn, output quoted, then "done"
 ```
+
+`★` marks human-in-the-loop checkpoints. Architect has two of them in sequence:
+after the design (with the challenge subagent's Risk Register attached) and
+after the plan. Neither checkpoint can be skipped — the next stage's output
+is not produced until the human has approved the previous one.
 
 For bugs the chain is `recover → fix → review (lite) → syncdocs`. For UI work
 it is `impeccable → implement → review → syncdocs`. The chains are listed
@@ -65,7 +84,7 @@ labq-skills/
 ├── README.md                  # this file
 └── .agents/skills/
     ├── using-skills/          # entry point; routes to the right skill
-    ├── architect/             # designs before code; persistence mode for big features
+    ├── architect/             # design + Risk Register + plan, two HITL gates, persistence mode for big features
     ├── discover/              # fuzzy product ideas → approved framing
     ├── bootstrap/             # load / repair / scaffold project context
     ├── recover/               # root-cause before any fix
