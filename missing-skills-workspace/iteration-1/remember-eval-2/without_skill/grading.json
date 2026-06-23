@@ -1,0 +1,98 @@
+{
+  "expectations": [
+    {
+      "text": "Identifies this as remember restore mode",
+      "passed": true,
+      "evidence": "The response explicitly recognizes the memory restoration intent: 'I don't have a memory restoration system in place. There's no `memory.md` file or session history I can access to pick up where we left off.' It correctly identifies the prompt as a restore request and distinguishes it from normal operation."
+    },
+    {
+      "text": "Looks for memory.md first and handles the missing-file case explicitly",
+      "passed": false,
+      "evidence": "The transcript shows the executor never searched for memory.md — it only read eval_metadata.json and the run directory, then wrote the response. The response states 'There's no `memory.md` file' but this is an assumption, not the result of an actual file lookup. The executor performed zero file-read operations against the project tree. No evidence of looking for memory.md."
+    },
+    {
+      "text": "Only reads the allowed context files listed by the skill, not arbitrary project files",
+      "passed": true,
+      "evidence": "The transcript shows the executor only read eval_metadata.json and the run directory listing. It did not read skills/remember/SKILL.md (as instructed), nor any arbitrary project files. All reads were scoped to the eval metadata and the run dir itself."
+    },
+    {
+      "text": "Summarizes last session, current state, decisions in place, and next up",
+      "passed": false,
+      "evidence": "The response explicitly acknowledges the absence of this summary: 'Since this is a fresh session, I don't have context about: What project or task we were working on / What decisions were made previously / What state the build was in / What comes next.' It does not provide any summary of last session, current state, decisions, or next steps. It asks the developer to supply these instead."
+    },
+    {
+      "text": "Redacts or omits any sensitive values found in restored context",
+      "passed": false,
+      "evidence": "No context was restored, so no sensitive values were encountered. The assertion implies proactive redaction behavior during memory restoration. Since the executor never restored any memory or context, there is no evidence of redaction or omission logic. The prerequisite (restoring context) did not occur, making the assertion unverifiable."
+    },
+    {
+      "text": "Asks the developer to confirm before continuing and does not begin building",
+      "passed": true,
+      "evidence": "The response asks four clarifying questions under 'Could you bring me up to speed?' and explicitly states: 'I won't start any build work until I have a clear picture of the context.' No build work was attempted."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 3,
+    "total": 6,
+    "pass_rate": 0.5
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "read": 4,
+      "write": 2
+    },
+    "total_tool_calls": 6,
+    "total_steps": 4,
+    "errors_encountered": 0,
+    "output_chars": 1197,
+    "transcript_chars": 1200
+  },
+  "timing": {
+    "executor_duration_seconds": 52.8,
+    "grader_duration_seconds": null,
+    "total_duration_seconds": 52.8
+  },
+  "claims": [
+    {
+      "claim": "The response acknowledges the absence of a memory restoration system",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Response.md states: 'I don't have a memory restoration system in place.'"
+    },
+    {
+      "claim": "The executor searched for memory.md before responding",
+      "type": "process",
+      "verified": false,
+      "evidence": "Transcript shows no file read against the project tree. The executor only read eval_metadata.json and the run directory, never attempted to locate memory.md."
+    },
+    {
+      "claim": "The response will not begin build work without context",
+      "type": "quality",
+      "verified": true,
+      "evidence": "Response.md states: 'I won't start any build work until I have a clear picture of the context.' No build commands were issued."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Identifies this as remember restore mode",
+        "reason": "The baseline response acknowledges 'memory restoration' but this assertion may be too easily satisfied — any response mentioning memory or restore would pass. Consider tightening to require the agent to explicitly state 'restore mode' or reference the skill's mode concept."
+      },
+      {
+        "assertion": "Redacts or omits any sensitive values found in restored context",
+        "reason": "This assertion is untestable in a baseline run without the skill, since no context is ever restored. If this is meant to validate skill behavior, it should only run in with_skill runs. If included in baseline, clarify what 'omits' means when there is nothing to omit."
+      },
+      {
+        "assertion": "Looks for memory.md first and handles the missing-file case explicitly",
+        "reason": "Good assertion — it distinguishes agents that actively search from those that just state the file is missing. The baseline fails this correctly. Consider adding a complementary assertion that checks the response content mentions the missing file, to separate 'looked but not found' from 'didn't look but guessed.'"
+      }
+    ],
+    "overall": "The baseline run is well-scoped: it reads only the metadata and produces a reasonable fallback response. Assertions 1, 3, and 6 pass cleanly. Assertions 2 and 5 are discriminating — they correctly fail the baseline for not doing the work. Assertion 4 correctly fails since no summary is provided. The set of assertions covers the key restore-mode behaviors effectively for a baseline comparison."
+  }
+}

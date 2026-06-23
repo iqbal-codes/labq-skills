@@ -1,0 +1,10 @@
+{
+  "run_id": "discover-eval-1-baseline",
+  "run_type": "baseline",
+  "eval_id": 1,
+  "skill_name": "discover",
+  "files_written": [
+    "outputs/response.md"
+  ],
+  "notes": "Baseline response. No skill file read. No project files created. Single clarifying question asked."
+}

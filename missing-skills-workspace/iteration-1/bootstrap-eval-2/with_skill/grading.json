@@ -1,0 +1,104 @@
+{
+  "expectations": [
+    {
+      "text": "Selects bootstrap mode rather than setup mode for a complete context backbone",
+      "passed": true,
+      "evidence": "Response.md line 20: 'Mode selected: **bootstrap**' and lines 22-23 justify: 'All nine context files exist and form a complete context backbone. The main job is to read and validate them, not to create or repair them.' The executor correctly identified that the presence of all 9 context files warrants bootstrap mode."
+    },
+    {
+      "text": "Uses the canonical context read order",
+      "passed": true,
+      "evidence": "Response.md lines 27-37 explicitly state 'Reading context files in canonical order (AGENTS.md absent, using default order)' and list all 9 files in the exact canonical order from the skill: project-overview, architecture, ui-tokens, ui-rules, ui-registry, code-standards, library-docs, build-plan, progress-tracker."
+    },
+    {
+      "text": "Checks AGENTS.md, local skills, skills-lock.json, and memory.md when present",
+      "passed": true,
+      "evidence": "Response.md lines 14-18 and 41-44 check all four items and report their status: 'AGENTS.md — not present', '.agents/skills/ — not present; no local skills directory', 'skills-lock.json — not present; no lockfile for skill registry', 'memory.md — not present; no cross-session handoff file'. The wiring validation section (lines 39-45) discusses each."
+    },
+    {
+      "text": "Reports current phase, last completed work, next step, and memory state",
+      "passed": false,
+      "evidence": "The Bootstrap Report section (lines 76-81) includes all four fields but leaves three as 'Unable to determine without reading progress-tracker.md contents'. The executor explicitly states on line 45: 'their consistency depends on their contents (not verified here as this is a stateless simulation)'. The skill requires reading progress-tracker.md and build-plan.md to 'Summarize the current feature phase, what is complete, what is next' — the executor never attempted to read these files, so it failed to report actual values. Only 'Memory state: absent' is correctly populated."
+    },
+    {
+      "text": "Does not silently fix mismatches in bootstrap mode",
+      "passed": true,
+      "evidence": "Response.md lines 47-52 contain a 'Recommended repairs' section that lists suggestions (create AGENTS.md, create .agents/skills/, etc.) as recommendations, not actions taken. The executor does not create or modify any files beyond its output files. The manifest.json confirms only 'outputs/response.md' and 'outputs/manifest.json' were written. No silent fixes."
+    },
+    {
+      "text": "Produces a Bootstrap Report with context files, skills and wiring, execution state, risks, and recommended next action",
+      "passed": true,
+      "evidence": "Response.md lines 56-93 contain a structured '## Bootstrap Report — [Project Name]' with all five required sections: '### Context files' (lists all 9 files with present/missing), '### Skills and wiring' (AGENTS.md, .agents/skills, skills-lock.json), '### Current execution state' (phase, last completed, next, memory), '### Risks or drift' (4 risk items), and '### Recommended next action' (create AGENTS.md paragraph). Matches the skill's report template."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "read": 9,
+      "write": 2,
+      "bash": 2
+    },
+    "total_tool_calls": 13,
+    "total_steps": 6,
+    "errors_encountered": 0,
+    "output_chars": 4280,
+    "transcript_chars": 2800
+  },
+  "timing": {
+    "executor_duration_seconds": 100.0,
+    "grader_duration_seconds": 32.0,
+    "total_duration_seconds": 132.0
+  },
+  "claims": [
+    {
+      "claim": "The executor selected bootstrap mode based on correct reasoning about file presence",
+      "type": "process",
+      "verified": true,
+      "evidence": "Transcript shows executor read the skill, identified all 9 context files exist, and chose bootstrap over setup/refresh — correct mode selection per skill definition."
+    },
+    {
+      "claim": "The canonical order was applied because AGENTS.md was absent",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Response.md line 27: 'Reading context files in canonical order (AGENTS.md absent, using default order)' — skill says to use AGENTS.md order if present, default order otherwise. Correct fallback."
+    },
+    {
+      "claim": "Execution state was determined by reading context files",
+      "type": "quality",
+      "verified": false,
+      "evidence": "Executor explicitly skipped reading context file contents (line 45: 'not verified here as this is a stateless simulation'). All three execution state fields returned 'Unable to determine'. The skill requires summarizing current phase, what is complete, and what is next from actual file contents."
+    },
+    {
+      "claim": "No repo files outside the run dir were modified",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Transcript shows only two write calls, both within the run dir (outputs/response.md, outputs/manifest.json). Manifest confirms only these two files."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Reports current phase, last completed work, next step, and memory state",
+        "reason": "This assertion passed for eval-1 but fails here — the executor refused to read simulated context files. Consider whether the sandbox should include stub content in the context files so the executor can demonstrate it reads them, or whether the assertion should specifically require 'attempts to read progress-tracker.md' rather than 'reports values'."
+      },
+      {
+        "assertion": "Does not silently fix mismatches in bootstrap mode",
+        "reason": "This assertion is hard to fail — the executor would need to actively create/modify files for a FAIL. A stronger assertion might check that the report explicitly surfaces each mismatch rather than just not fixing them silently."
+      },
+      {
+        "reason": "The 'Bootstrap Report' section format closely follows the template, but the executor never read the actual context file contents (progress-tracker.md, build-plan.md) to populate execution state. A distinguishing assertion would be: 'The executor reads context file contents (not just checks existence) before producing the report'."
+      }
+    ],
+    "overall": "Assertions 1, 2, 3, 5, 6 pass cleanly — the executor followed the skill workflow for mode selection, canonical order, wiring checks, and report structure. Assertion 4 fails because the executor skipped reading context file contents and left execution state fields as 'Unable to determine'. The sandbox may need actual file content to make this assertion testable."
+  }
+}

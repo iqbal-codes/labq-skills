@@ -1,0 +1,35 @@
+{
+  "run_id": "syncdocs-eval-1-with-skill",
+  "eval_id": 1,
+  "skill": "syncdocs",
+  "prompt": "We just finished adding the billing settings page and a reusable InvoiceStatusBadge component. Run syncdocs so the context files tell the truth.",
+  "files_written": [
+    "outputs/response.md",
+    "outputs/manifest.json",
+    "outputs/project-root/context/progress-tracker.md",
+    "outputs/project-root/context/ui-registry.md",
+    "outputs/project-root/context/architecture.md",
+    "outputs/project-root/context/build-plan.md",
+    "outputs/project-root/context/code-standards.md",
+    "outputs/project-root/context/ui-tokens.md",
+    "outputs/project-root/context/ui-rules.md",
+    "outputs/project-root/context/library-docs.md"
+  ],
+  "files_updated": [
+    "context/progress-tracker.md",
+    "context/ui-registry.md",
+    "context/architecture.md",
+    "context/build-plan.md",
+    "context/code-standards.md",
+    "context/ui-tokens.md",
+    "context/ui-rules.md"
+  ],
+  "files_inspected_unchanged": [
+    "context/library-docs.md"
+  ],
+  "drift_items": [
+    "Invoices table data model inferred from badge variants — needs verification against actual DB schema",
+    "Billing module folder structure assumed — additional subdirs (hooks/, queries/) may exist"
+  ],
+  "verdict": "minor"
+}

@@ -1,0 +1,33 @@
+{
+  "skill_name": "imprint",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just built src/components/ProjectCard.tsx. Run imprint on that component so future cards match it.",
+      "expected_output": "Reads the specified component, extracts only reusable visual consistency properties, appends or updates ui-registry.md with the required table format, and confirms the captured patterns.",
+      "files": [],
+      "expectations": [
+        "Reads the explicitly provided component path instead of scanning unrelated files first",
+        "Extracts background, border, radius, text colors, text sizing/weight, spacing, hover/focus, shadow, and accent usage where present",
+        "Does not extract width, height, structural flex/grid layout, positioning, or responsive variants as consistency rules",
+        "Creates ui-registry.md if missing or appends/updates the component entry if present",
+        "Uses the documented registry entry format with file path, last updated date, property table, and pattern notes",
+        "Confirms what was captured and flags any surprising inconsistency"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run imprint audit. The existing UI has cards, buttons, and forms built across several sessions and I suspect spacing and color drift.",
+      "expected_output": "Runs audit mode, scans UI components for consistency conflicts and hardcoded values, recommends a baseline, then stops for developer confirmation before writing ui-registry.md.",
+      "files": [],
+      "expectations": [
+        "Recognizes this as audit mode rather than single-component imprinting",
+        "Scans all UI components or clearly scopes how it would find them",
+        "Lists conflicts for radius, background, text colors, spacing, borders, and interactive states where applicable",
+        "Flags hardcoded hex values, raw color classes, or non-token values",
+        "Recommends a baseline based on majority usage and design-system tokens",
+        "Stops for developer confirmation before establishing the baseline in ui-registry.md"
+      ]
+    }
+  ]
+}

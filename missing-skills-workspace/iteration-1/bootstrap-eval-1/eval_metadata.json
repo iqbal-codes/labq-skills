@@ -1,0 +1,14 @@
+{
+  "eval_id": 1,
+  "eval_name": "bootstrap-eval-1",
+  "skill_name": "bootstrap",
+  "prompt": "I just copied these skills into a fresh repo. Before we build anything, run bootstrap and tell me whether the context system is ready. The repo has AGENTS.md and skills/, but no context/ directory yet.",
+  "assertions": [
+    "Checks for AGENTS.md, context/, the nine required context files, skills directory, skills-lock.json, and memory.md if applicable",
+    "Classifies the state as setup or refresh because the context backbone is missing",
+    "Does not claim the context system is healthy when context/ files are absent",
+    "Surfaces wiring issues plainly instead of burying them in prose",
+    "Does not silently create or rewrite the context files before reporting state",
+    "Provides a concise report with recommended next action"
+  ]
+}

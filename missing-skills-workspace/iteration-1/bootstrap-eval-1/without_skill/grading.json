@@ -1,0 +1,84 @@
+{
+  "expectations": [
+    {
+      "text": "Checks for AGENTS.md, context/, the nine required context files, skills directory, skills-lock.json, and memory.md if applicable",
+      "passed": false,
+      "evidence": "The response checks AGENTS.md (present), context/ (absent), skills/ (present), skills-lock.json ('Unknown — not checked'), and memory.md ('N/A'). However, it does not enumerate or check the nine required context files individually — it only notes context/ is entirely missing. skills-lock.json is listed as 'not checked' rather than actually verified. The nine individual context files are never listed or inspected."
+    },
+    {
+      "text": "Classifies the state as setup or refresh because the context backbone is missing",
+      "passed": true,
+      "evidence": "Response explicitly states: 'This is a **setup** run, not a refresh. In a refresh scenario, context/ would already exist with prior state that needs updating. Here, it was never created, so the bootstrap action is to initialize the context backbone from scratch.'"
+    },
+    {
+      "text": "Does not claim the context system is healthy when context/ files are absent",
+      "passed": true,
+      "evidence": "Response states: 'The context system is **not ready**' in the diagnosis header and throughout. No claim of health is made."
+    },
+    {
+      "text": "Surfaces wiring issues plainly instead of burying them in prose",
+      "passed": true,
+      "evidence": "The diagnosis section uses a bold header 'Not Ready — This Is a Fresh Setup' and a numbered list where the critical gap is highlighted: 'context/ is missing entirely — this is the critical gap.' The issue is prominent, not buried."
+    },
+    {
+      "text": "Does not silently create or rewrite the context files before reporting state",
+      "passed": true,
+      "evidence": "Response explicitly states: 'I did **not** silently create or rewrite any context files. This report reflects the current state only.' Transcript confirms no file creation or modification occurred outside the run directory."
+    },
+    {
+      "text": "Provides a concise report with recommended next action",
+      "passed": true,
+      "evidence": "The response includes a 'Recommended Next Action' section with three concrete numbered steps: create context/, verify skills-lock.json, and initialize memory.md. It also notes when to re-run the check."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Read": 5,
+      "Write": 2,
+      "Bash": 1,
+      "Find": 1
+    },
+    "total_tool_calls": 9,
+    "total_steps": 5,
+    "errors_encountered": 1,
+    "output_chars": 2400,
+    "transcript_chars": 3200
+  },
+  "timing": {
+    "total_duration_seconds": 87.0
+  },
+  "claims": [
+    {
+      "claim": "The response is a baseline answer without reading the bootstrap skill",
+      "type": "process",
+      "verified": true,
+      "evidence": "Transcript confirms executor only read eval_metadata.json, not any SKILL.md. The assignment explicitly forbade reading the skill."
+    },
+    {
+      "claim": "No repo files outside the run dir were modified",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Transcript shows only two writes, both within the run dir's outputs/ directory. Git status confirmed no external changes."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Checks for AGENTS.md, context/, the nine required context files, skills directory, skills-lock.json, and memory.md if applicable",
+        "reason": "This assertion bundles many sub-checks into one string. Since context/ is absent, checking the nine individual context files inside it is impossible — the assertion may be unverifiable in this specific scenario. Consider splitting into (a) checks top-level artifacts and (b) enumerates context files when context/ exists."
+      }
+    ],
+    "overall": "The baseline performs well on most assertions. The only failure is assertion 1, which asks for enumeration of nine context files that cannot exist when context/ is missing. A baseline without skill knowledge has no reason to know what those nine files are, making this assertion arguably unfair for a baseline run. The response is solid for a no-skill baseline — clear diagnosis, no false claims, no unauthorized file creation."
+  }
+}

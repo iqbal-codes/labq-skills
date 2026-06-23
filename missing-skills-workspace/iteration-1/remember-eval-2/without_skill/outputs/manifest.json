@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "remember-eval-2",
+  "skill_name": "remember",
+  "run_type": "baseline",
+  "files_written": [
+    "outputs/response.md"
+  ],
+  "no_skill_read": true,
+  "no_assertions_checked": true
+}

@@ -1,0 +1,33 @@
+{
+  "skill_name": "bootstrap",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just copied these skills into a fresh repo. Before we build anything, run bootstrap and tell me whether the context system is ready. The repo has AGENTS.md and skills/, but no context/ directory yet.",
+      "expected_output": "Detects setup/refresh state from repo facts, reports missing context backbone clearly, does not invent project-specific context, and stops with a concise bootstrap/refresh report before writing broader changes.",
+      "files": [],
+      "expectations": [
+        "Checks for AGENTS.md, context/, the nine required context files, skills directory, skills-lock.json, and memory.md if applicable",
+        "Classifies the state as setup or refresh because the context backbone is missing",
+        "Does not claim the context system is healthy when context/ files are absent",
+        "Surfaces wiring issues plainly instead of burying them in prose",
+        "Does not silently create or rewrite the context files before reporting state",
+        "Provides a concise report with recommended next action"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Bootstrap this existing project. It already has context/project-overview.md, architecture.md, ui-tokens.md, ui-rules.md, ui-registry.md, code-standards.md, library-docs.md, build-plan.md, and progress-tracker.md. Validate the wiring and summarize current execution state.",
+      "expected_output": "Uses bootstrap mode, reads/validates the expected files in order, checks skill wiring and lockfile consistency, summarizes current phase/next work, and reports drift without editing in bootstrap mode.",
+      "files": [],
+      "expectations": [
+        "Selects bootstrap mode rather than setup mode for a complete context backbone",
+        "Uses the canonical context read order",
+        "Checks AGENTS.md, local skills, skills-lock.json, and memory.md when present",
+        "Reports current phase, last completed work, next step, and memory state",
+        "Does not silently fix mismatches in bootstrap mode",
+        "Produces a Bootstrap Report with context files, skills and wiring, execution state, risks, and recommended next action"
+      ]
+    }
+  ]
+}

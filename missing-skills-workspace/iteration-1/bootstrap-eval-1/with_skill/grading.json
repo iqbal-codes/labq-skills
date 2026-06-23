@@ -1,0 +1,105 @@
+{
+  "expectations": [
+    {
+      "text": "Checks for AGENTS.md, context/, the nine required context files, skills directory, skills-lock.json, and memory.md if applicable",
+      "passed": true,
+      "evidence": "The transcript shows the executor read AGENTS.md (line 38), ran bash commands to inspect context/, skills/, .agents/skills/, skills-lock.json, and memory.md (lines 39, 44). The response.md lists every item explicitly: AGENTS.md present, skills/ present with 10 directories, context/ absent (none of the 9 required files exist), .agents/skills/ absent, skills-lock.json absent, memory.md absent. All required check targets were inspected."
+    },
+    {
+      "text": "Classifies the state as setup or refresh because the context backbone is missing",
+      "passed": true,
+      "evidence": "Response.md states 'Mode selected: Setup' and justifies it: 'The context system is mostly absent. AGENTS.md defines the backbone, but the actual context/ directory and all 9 required files have not been created yet. This is a greenfield scaffolding job.' This matches the bootstrap skill's definition of Setup mode."
+    },
+    {
+      "text": "Does not claim the context system is healthy when context/ files are absent",
+      "passed": true,
+      "evidence": "The response never claims the context system is healthy. Instead it states: 'context/ — entire directory absent. None of the 9 required context files exist', 'Without context/, the agent has no project operating system', and classifies the state as Setup (not Bootstrap, which would imply a working system). No health claim is made anywhere in the output."
+    },
+    {
+      "text": "Surfaces wiring issues plainly instead of burying them in prose",
+      "passed": true,
+      "evidence": "Response.md has a dedicated 'Wiring issues found' section with two clearly formatted bullet points: (1) caveman-commit listed in AGENTS.md but missing from skills/, (2) imprint exists in skills/ but unlisted in AGENTS.md. A separate 'Why they matter' section explains the concrete impact. This follows the bootstrap skill's prescribed format for surfacing wiring issues plainly."
+    },
+    {
+      "text": "Does not silently create or rewrite the context files before reporting state",
+      "passed": true,
+      "evidence": "The transcript shows the executor only wrote to outputs/response.md and outputs/manifest.json (both inside the run dir). No context/ directory was created, no AGENTS.md was modified, and no context files were scaffolded. The report recommends '/bootstrap setup' as the next action rather than performing the setup itself."
+    },
+    {
+      "text": "Provides a concise report with recommended next action",
+      "passed": true,
+      "evidence": "Response.md is a well-structured 30-line report with clear sections: Detected project state, Wiring issues found, Why they matter, Mode selected, and Recommended next action. The recommended next action is specific and actionable: 'Run /bootstrap setup to scaffold the full context system' with details on what it will create."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "read": 3,
+      "bash": 4,
+      "write": 2
+    },
+    "total_tool_calls": 9,
+    "total_steps": 7,
+    "errors_encountered": 1,
+    "output_chars": 2200,
+    "transcript_chars": 2800
+  },
+  "timing": {
+    "executor_duration_seconds": 104.0,
+    "total_duration_seconds": 104.0
+  },
+  "claims": [
+    {
+      "claim": "10 skill directories exist with SKILL.md files",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Transcript shows `ls -d skills/*/SKILL.md | wc -l` was run. The response lists: architect, bootstrap, discover, impeccable, imprint, recover, remember, review, syncdocs, using-skills — exactly 10."
+    },
+    {
+      "claim": "caveman-commit is listed in AGENTS.md but missing from skills/",
+      "type": "factual",
+      "verified": true,
+      "evidence": "AGENTS.md was read and skills/ was listed. The executor identified this mismatch and reported it. No caveman-commit directory appears in the skills listing."
+    },
+    {
+      "claim": "imprint exists in skills/ but is unlisted in AGENTS.md",
+      "type": "factual",
+      "verified": true,
+      "evidence": "imprint appears in the skills listing (10 skills counted) but is not referenced in AGENTS.md per the executor's inspection."
+    },
+    {
+      "claim": "The context system has no project operating system without context/",
+      "type": "quality",
+      "verified": true,
+      "evidence": "Since context/ is entirely absent and contains none of the 9 required files, the project lacks the structured state backbone. The response correctly explains the downstream impact: every session starts from conversation residue instead of structured state."
+    },
+    {
+      "claim": "No repo files outside the run directory were modified",
+      "type": "process",
+      "verified": true,
+      "evidence": "The transcript shows writes only to outputs/response.md and outputs/manifest.json, both within the assigned run directory. No other write operations appear in the transcript."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Checks for AGENTS.md, context/, the nine required context files, skills directory, skills-lock.json, and memory.md if applicable",
+        "reason": "This is a broad assertion that bundles many check targets. A pass could be claimed even if only some items were checked. Consider splitting into separate assertions for detection completeness (AGENTS.md + context/) and wiring completeness (skills-lock.json + memory.md) to increase discriminating power."
+      },
+      {
+        "reason": "No assertion verifies that the report's content is accurate — e.g., that the stated number of skills matches reality, or that the wiring issues are real mismatches. The executor could fabricate issues and still pass all assertions."
+      }
+    ],
+    "overall": "Assertions test the bootstrap skill's behavioral discipline well: detection, classification, restraint, issue surfacing, and reporting. The main gap is that assertions verify presence/absence of behavior but not the accuracy of the reported findings."
+  }
+}

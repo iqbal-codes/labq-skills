@@ -1,0 +1,33 @@
+{
+  "skill_name": "remember",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're stopping for the day. Save memory for this session: we added OAuth login pages, chose server-side sessions, fixed a callback URL bug, tests pass, and next time we need to wire account linking. Do not include the access token I pasted earlier.",
+      "expected_output": "Runs save mode, captures durable handoff state only, redacts/omits secrets, writes memory.md in the specified format if safe, and confirms restore instructions.",
+      "files": [],
+      "expectations": [
+        "Identifies this as remember save mode",
+        "Captures what was built, decisions made, problems solved, current state, next session start, and open questions",
+        "Does not include access tokens, credentials, cookies, auth headers, or secret-like values",
+        "Avoids transcript-style process details and implementation details already visible in code",
+        "Uses the documented memory.md format with Last updated and the six required sections",
+        "Tells the user to run /remember restore next session after saving"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "New session. Restore memory and tell me where we left off before doing any build work.",
+      "expected_output": "Runs restore mode, reads memory.md and allowed context files only, summarizes restored state, redacts secrets if present, asks for confirmation, and does not start implementation before approval.",
+      "files": [],
+      "expectations": [
+        "Identifies this as remember restore mode",
+        "Looks for memory.md first and handles the missing-file case explicitly",
+        "Only reads the allowed context files listed by the skill, not arbitrary project files",
+        "Summarizes last session, current state, decisions in place, and next up",
+        "Redacts or omits any sensitive values found in restored context",
+        "Asks the developer to confirm before continuing and does not begin building"
+      ]
+    }
+  ]
+}

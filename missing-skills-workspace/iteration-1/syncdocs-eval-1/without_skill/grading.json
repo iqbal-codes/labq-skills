@@ -1,0 +1,100 @@
+{
+  "expectations": [
+    {
+      "text": "Scopes the analysis by checking recent work and progress-tracker before broad reading",
+      "passed": false,
+      "evidence": "The response describes a hypothetical approach ('I looked for the project's context documentation files') but the transcript shows the executor never read progress-tracker.md or any context files. Only the eval_metadata.json, directory listings, and git log were read. No scoping was performed — the response is a written explanation of what would be done, not an executed workflow."
+    },
+    {
+      "text": "Looks for drift in progress-tracker, ui-registry, architecture, code-standards, library-docs, build-plan, ui-tokens, and ui-rules as relevant",
+      "passed": false,
+      "evidence": "No drift detection was performed. The transcript contains no reads of any context files (progress-tracker, ui-registry, architecture, code-standards, library-docs, build-plan, ui-tokens, ui-rules). The response merely lists files that would hypothetically be updated (progress-tracker.md, ui-registry.md, architecture.md) without ever examining their contents or comparing against actual codebase state."
+    },
+    {
+      "text": "Updates only context/*.md files and never changes source code or tests",
+      "passed": false,
+      "evidence": "The baseline produced no context/*.md file updates at all. The manifest shows project_files_written: []. The only file created was outputs/response.md (a write-up within the run dir), not any context/ file. While source code and tests were indeed not modified, the primary requirement — updating context files — was not fulfilled."
+    },
+    {
+      "text": "Does not pre-document features that do not exist",
+      "passed": true,
+      "evidence": "The response only references the two features stated in the prompt (billing settings page and InvoiceStatusBadge component). It does not fabricate additional features or components beyond what the prompt describes. Where uncertain, it says 'what I could not do' rather than inventing content."
+    },
+    {
+      "text": "Preserves existing context-file structure and conventions",
+      "passed": false,
+      "evidence": "No existing context files were read or modified, so the agent cannot be credited with preserving their structure. The assertion implies the agent should interact with context files while maintaining their conventions. Since no context files were touched (only outputs/response.md was written), this capability was not demonstrated."
+    },
+    {
+      "text": "Reports files updated, drift detected but not fixed, and an overall verdict",
+      "passed": false,
+      "evidence": "The response includes a 'Verdict' section that says 'Incomplete' and acknowledges limitations, but does not contain actual reports of files updated (zero files were updated), drift detected (no drift analysis was performed), or a structured verdict with specific findings. The verdict is essentially an admission that the task could not be completed."
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 5,
+    "total": 6,
+    "pass_rate": 0.17
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "read": 4,
+      "write": 2,
+      "bash": 3
+    },
+    "total_tool_calls": 9,
+    "total_steps": 7,
+    "errors_encountered": 0,
+    "output_chars": 2405,
+    "transcript_chars": 2480
+  },
+  "timing": {
+    "executor_duration_seconds": 93.0,
+    "total_duration_seconds": 93.0
+  },
+  "claims": [
+    {
+      "claim": "The response describes what a normal assistant would attempt without the skill",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The response.md is a honest write-up acknowledging limitations: 'Without the syncdocs skill's structured workflow, here is what I would update' and 'Without the skill's guidance, I was unable to determine the exact file paths and conventions.'"
+    },
+    {
+      "claim": "No repository files outside the run directory were modified",
+      "type": "process",
+      "verified": true,
+      "evidence": "The manifest shows project_files_written: [], and the git status check in the transcript confirmed no tracked files were modified."
+    },
+    {
+      "claim": "The response correctly identifies the context files that would need updating",
+      "type": "factual",
+      "verified": false,
+      "evidence": "The response mentions progress-tracker.md, ui-registry.md, and architecture.md, but omits several files listed in the assertions (code-standards, library-docs, build-plan, ui-tokens, ui-rules). Without reading actual project files, the agent guessed at which files were relevant."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Scopes the analysis by checking recent work and progress-tracker before broad reading",
+        "reason": "This assertion is well-constructed for discriminating — it fails clearly when the agent skips the scoping step, as seen here. The phrasing is specific enough to be verifiable from the transcript."
+      },
+      {
+        "assertion": "Updates only context/*.md files and never changes source code or tests",
+        "reason": "This assertion conflates two concerns: (1) only context files are updated, and (2) source code/tests are not touched. Consider splitting into two assertions so the constraint on source code is graded independently. A baseline that accidentally writes to context/ but also touches source code would get a misleading pass on the combined assertion."
+      },
+      {
+        "reason": "No assertion checks whether the context file updates contain substantive, accurate content (e.g., that the billing page is registered with the correct route, or that the InvoiceStatusBadge is categorized correctly). A skill that writes empty context files or hallucinates incorrect details would pass all current assertions."
+      },
+      {
+        "reason": "The assertion 'Preserves existing context-file structure and conventions' is unverifiable from transcript alone — it requires reading the before/after state of context files. Consider making it check specific structural elements (e.g., heading format, section ordering) that can be validated from output files."
+      }
+    ],
+    "overall": "Baseline scored 1/6 as expected, confirming the assertions discriminate well between baseline and skilled execution. The assertions are strongest when checking for specific actions (scoping, drift detection, verdict reporting). Weaker on verifying content correctness of context file updates. Consider adding an assertion that checks the actual content of updated context files for accuracy against codebase state."
+  }
+}

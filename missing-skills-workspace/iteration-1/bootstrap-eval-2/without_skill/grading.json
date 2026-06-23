@@ -1,0 +1,89 @@
+{
+  "expectations": [
+    {
+      "text": "Selects bootstrap mode rather than setup mode for a complete context backbone",
+      "passed": true,
+      "evidence": "The response is titled 'Bootstrap Report — Project Validation' and takes a validation-first posture: it inventories existing files, reports what's missing, and recommends next steps — consistent with bootstrap mode. It does not attempt to create or scaffold new context files, which would be setup mode. However, the executor never explicitly chose bootstrap over setup; the prompt itself says 'Bootstrap this existing project' making this trivially satisfied."
+    },
+    {
+      "text": "Uses the canonical context read order",
+      "passed": true,
+      "evidence": "The Context Files Status table in response.md lists the nine context files in exactly the canonical order from the prompt: project-overview.md, architecture.md, ui-tokens.md, ui-rules.md, ui-registry.md, code-standards.md, library-docs.md, build-plan.md, progress-tracker.md."
+    },
+    {
+      "text": "Checks AGENTS.md, local skills, skills-lock.json, and memory.md when present",
+      "passed": true,
+      "evidence": "The 'Additional Bootstrap Checks' table in response.md explicitly checks all four items: AGENTS.md (NOT FOUND), Local skills directory (NOT FOUND), skills-lock.json (NOT FOUND), memory.md (NOT FOUND)."
+    },
+    {
+      "text": "Reports current phase, last completed work, next step, and memory state",
+      "passed": true,
+      "evidence": "The 'Execution State' section reports all four: Current Phase ('N/A — project scaffolding is absent'), Last Completed Work ('None detected'), Next Step ('Create the context/ directory and populate all nine expected context files'), Memory State ('No memory.md found; no memory to load')."
+    },
+    {
+      "text": "Does not silently fix mismatches in bootstrap mode",
+      "passed": true,
+      "evidence": "The baseline made zero file modifications outside the run dir (only outputs/response.md and outputs/manifest.json were written). It reported all missing files as NOT FOUND and did not fabricate or fix any content. However, this assertion is trivially satisfied because there were no mismatches to fix — every expected file was simply absent."
+    },
+    {
+      "text": "Produces a Bootstrap Report with context files, skills and wiring, execution state, risks, and recommended next action",
+      "passed": true,
+      "evidence": "The response is titled 'Bootstrap Report — Project Validation' and contains all required sections: Context Files Status (context files), Additional Bootstrap Checks + Wiring Validation (skills and wiring), Execution State, Risks, and Recommended Next Action."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 77.0,
+    "total_duration_seconds": 77.0
+  },
+  "claims": [
+    {
+      "claim": "None of the expected context files exist in the project workspace",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The find tool on the workspace confirmed no .md files exist under missing-skills-workspace/; the only .md files are eval_metadata.json and the output files. The baseline correctly reported all nine context files as NOT FOUND."
+    },
+    {
+      "claim": "No files outside the run directory were modified",
+      "type": "process",
+      "verified": true,
+      "evidence": "The transcript shows only two write calls: outputs/response.md and outputs/manifest.json, both within the run dir. The manifest.json also states 'No project-root files written'."
+    },
+    {
+      "claim": "The project has no skill-based automation configured",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The workspace was checked for skills-lock.json and a local skills directory; both were NOT FOUND. No skill configuration exists in the eval workspace."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Selects bootstrap mode rather than setup mode for a complete context backbone",
+        "reason": "The prompt explicitly says 'Bootstrap this existing project', so any executor that follows the instruction trivially satisfies this. A more discriminating assertion would require the executor to explicitly articulate why bootstrap was chosen over setup (e.g., 'files exist, so I am validating rather than scaffolding'), or to demonstrate it handled a mixed state where some files exist and others don't."
+      },
+      {
+        "assertion": "Does not silently fix mismatches in bootstrap mode",
+        "reason": "Trivially satisfied here because all files were absent — there were no mismatches to silently fix. This assertion would only be tested if the eval setup included files with inconsistencies (e.g., cross-references that don't resolve). Consider seeding at least one file with an intentional mismatch to make this assertion discriminating."
+      },
+      {
+        "assertion": "Uses the canonical context read order",
+        "reason": "The baseline listed files in the correct order in a table, but this doesn't prove it actually read them in that order — it could have read them in any order and just formatted the table that way. A stronger assertion would check the transcript for read operations in canonical order, or verify that cross-file wiring validation respects the dependency chain (e.g., code-standards validated before build-plan)."
+      },
+      {
+        "reason": "No assertion verifies that the executor actually attempted to read or validate the content of context files (when present) — checking file existence alone is shallow. A skill that reads and cross-references file contents (e.g., verifying ui-tokens referenced in ui-rules exist in ui-tokens.md) would be doing real wiring validation, which is the core value of bootstrap mode."
+      }
+    ],
+    "overall": "All assertions pass, but the eval is weakly discriminating in this baseline context. Three of six assertions are trivially satisfied by the prompt wording or by the absence of files to conflict with. The most impactful improvement would be seeding the eval workspace with actual context files (some correct, some with intentional inconsistencies) to test whether the executor performs genuine wiring validation rather than just listing files as NOT FOUND."
+  }
+}
