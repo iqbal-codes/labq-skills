@@ -147,6 +147,8 @@ After the report, do not just wait. Drive the next step. Issues have severity la
 
 **Never present a Critical review and then end the session without explicit resolution.**
 
+**Hand-off to `syncdocs`:** once disposition is settled (no Criticals open, Important acknowledged, Minor logged), the next skill in the chain is `syncdocs` — it reconciles the context files (`progress-tracker.md`, `ui-registry.md`, etc.) with what the feature actually built. Minor issues logged here will be picked up by `syncdocs` at end-of-feature.
+
 ---
 
 ## Step 6 — Audit Mode (if Mode = Audit)

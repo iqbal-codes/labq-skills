@@ -17,6 +17,16 @@ The goal is simple: every project should have the same stable context backbone, 
 
 ---
 
+## Inter-Skill Awareness
+
+This skill is the canonical owner of the `context/` system. A few related skills reference what `bootstrap` does — do not duplicate their rules; point at them:
+
+- **`using-skills`** is the front-door router. It detects project state, applies universal guards (verify-before-claim, branch lifecycle, destructive-action gate), and routes non-trivial tasks to specialized skills. When `using-skills` needs to read or repair context, it routes here (route #1, or via `syncdocs` for repair). It does NOT specify the read order itself; that is `bootstrap`'s job.
+- **`AGENTS.md`** is the *project-level* override for the read order. If present, the order `AGENTS.md` specifies takes precedence over `bootstrap`'s canonical 9-file order. `bootstrap` validates that the documented order matches the actual files; it does not invent a new order.
+- **`syncdocs`** handles lightweight context drift after a feature. `bootstrap` is the heavier refresh/setup; `syncdocs` is the small fix. `using-skills` routes to `syncdocs` for the small case (route #7) and to `bootstrap` for the heavy case (route #1).
+
+If a context-related concept lives in another skill, `bootstrap` should reference it, not redefine it.
+
 ## How to Invoke
 
 At session start on an existing project:

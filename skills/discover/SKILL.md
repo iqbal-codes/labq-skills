@@ -46,6 +46,8 @@ This skill does not finalize architecture, bootstrap context, scaffold code, or 
 
 ## When to Use It
 
+You got here from `using-skills` route #2 ("Product idea is vague or repo purpose is fuzzy"). The routing map and chains in `using-skills` are authoritative; this skill is what they pointed you to.
+
 Use this skill when:
 
 - developer says “let’s brainstorm” or wants discovery first
