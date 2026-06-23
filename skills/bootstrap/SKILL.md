@@ -66,8 +66,10 @@ Read them when you need to create or repair the system:
 - `references/library-docs.md`
 - `references/build-plan.md`
 - `references/progress-tracker.md`
+- `references/AGENTS.md`
 
-These references are not project facts. They are the recipes and templates for how each context file should work. Use them to scaffold new projects and to compare existing projects against the expected shape.
+These references are not project facts. They are the recipes and templates for how each context file — and the project-level `AGENTS.md` — should work. Use them to scaffold new projects and to compare existing projects against the expected shape.
+
 
 ---
 
@@ -205,10 +207,12 @@ Treat this as creating the project's agentic operating system.
 Create the minimal structure:
 
 - `context/`
-- `AGENTS.md`
+- `AGENTS.md` — read `references/AGENTS.md` first for the template; only create the file if the developer wants project-level context (the skills work standalone without it)
 - `.agents/skills/`
 - the nine starter context files
 - optionally `memory.md` if cross-session handoff is part of the workflow
+
+When drafting `AGENTS.md` (if at all): the template in `references/AGENTS.md` covers the project-specific override rules. Pull facts from the repo and the developer's stated conventions; do not copy any other project's `AGENTS.md`.
 
 When drafting each context file:
 
