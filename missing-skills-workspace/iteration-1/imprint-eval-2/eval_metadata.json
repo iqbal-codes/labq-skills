@@ -1,0 +1,14 @@
+{
+  "eval_id": 2,
+  "eval_name": "imprint-eval-2",
+  "skill_name": "imprint",
+  "prompt": "Run imprint audit. The existing UI has cards, buttons, and forms built across several sessions and I suspect spacing and color drift.",
+  "assertions": [
+    "Recognizes this as audit mode rather than single-component imprinting",
+    "Scans all UI components or clearly scopes how it would find them",
+    "Lists conflicts for radius, background, text colors, spacing, borders, and interactive states where applicable",
+    "Flags hardcoded hex values, raw color classes, or non-token values",
+    "Recommends a baseline based on majority usage and design-system tokens",
+    "Stops for developer confirmation before establishing the baseline in ui-registry.md"
+  ]
+}

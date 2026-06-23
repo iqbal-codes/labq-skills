@@ -1,0 +1,14 @@
+{
+  "eval_id": 2,
+  "eval_name": "discover-eval-2",
+  "skill_name": "discover",
+  "prompt": "We have a half-built booking app but the target user keeps changing. Before more implementation, reset the framing: who is it for, what is the first useful version, and what should be out of scope?",
+  "assertions": [
+    "Classifies the session as reset or uncertain scope",
+    "Separates what is known from what is unclear",
+    "Pushes toward concrete target user, problem, core flow, MVP scope, non-goals, and success criteria",
+    "Uses fact/assumption/needs-decision framing for uncertainty",
+    "Avoids premature technical architecture details",
+    "Requires user approval before moving to architect or writing the final overview"
+  ]
+}

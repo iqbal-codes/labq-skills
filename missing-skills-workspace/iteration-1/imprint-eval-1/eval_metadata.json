@@ -1,0 +1,14 @@
+{
+  "eval_id": 1,
+  "eval_name": "imprint-eval-1",
+  "skill_name": "imprint",
+  "prompt": "I just built src/components/ProjectCard.tsx. Run imprint on that component so future cards match it.",
+  "assertions": [
+    "Reads the explicitly provided component path instead of scanning unrelated files first",
+    "Extracts background, border, radius, text colors, text sizing/weight, spacing, hover/focus, shadow, and accent usage where present",
+    "Does not extract width, height, structural flex/grid layout, positioning, or responsive variants as consistency rules",
+    "Creates ui-registry.md if missing or appends/updates the component entry if present",
+    "Uses the documented registry entry format with file path, last updated date, property table, and pattern notes",
+    "Confirms what was captured and flags any surprising inconsistency"
+  ]
+}

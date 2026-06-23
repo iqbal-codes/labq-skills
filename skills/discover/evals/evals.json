@@ -1,0 +1,33 @@
+{
+  "skill_name": "discover",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a vague idea for an internal tool that helps our support team understand customer churn, but I don't know what the MVP should be. Help me figure out the product before we architect anything.",
+      "expected_output": "Runs discovery rather than architecture, classifies the session, asks one focused product question at a time, compares plausible MVP directions, and does not scaffold, code, or write project-overview.md before approval.",
+      "files": [],
+      "expectations": [
+        "Classifies the discovery session state before solutioning",
+        "Does not invoke architecture, bootstrap, scaffolding, or implementation before discovery approval",
+        "Asks only one clarifying question at a time",
+        "Focuses on product/user/scope/constraints rather than folder structure or implementation details",
+        "Plans to compare 2-3 candidate product directions before locking framing",
+        "Does not write context/project-overview.md before the user approves discovery framing"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We have a half-built booking app but the target user keeps changing. Before more implementation, reset the framing: who is it for, what is the first useful version, and what should be out of scope?",
+      "expected_output": "Treats this as reset/uncertain-scope discovery, extracts known facts and gaps, narrows MVP scope, separates confirmed facts from assumptions and needed decisions, and gates transition to architecture until the user approves.",
+      "files": [],
+      "expectations": [
+        "Classifies the session as reset or uncertain scope",
+        "Separates what is known from what is unclear",
+        "Pushes toward concrete target user, problem, core flow, MVP scope, non-goals, and success criteria",
+        "Uses fact/assumption/needs-decision framing for uncertainty",
+        "Avoids premature technical architecture details",
+        "Requires user approval before moving to architect or writing the final overview"
+      ]
+    }
+  ]
+}

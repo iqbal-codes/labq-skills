@@ -1,0 +1,23 @@
+{
+  "run_id": "discover-eval-1-with-skill",
+  "skill": "discover",
+  "eval_id": 1,
+  "files_written": [
+    {
+      "path": "outputs/response.md",
+      "description": "Discovery session response: classified session state, asked first clarifying question (one at a time), focused on product/user/scope/constraints, did not invoke architecture or write project-overview.md before approval."
+    },
+    {
+      "path": "outputs/manifest.json",
+      "description": "Manifest listing files written by this run."
+    }
+  ],
+  "notes": [
+    "Session classified as 'uncertain scope' — product idea exists but MVP/UX/data are unclear.",
+    "No architecture, bootstrap, scaffolding, or implementation invoked before discovery approval.",
+    "Single clarifying question asked (one at a time per skill contract).",
+    "Response focuses on product, user, scope, and constraints — no folder structure or implementation details.",
+    "Directions comparison (2-3 candidates) to be presented after user answers clarifying question.",
+    "context/project-overview.md will only be written after user approves discovery framing."
+  ]
+}

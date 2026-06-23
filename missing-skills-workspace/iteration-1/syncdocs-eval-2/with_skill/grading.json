@@ -1,0 +1,97 @@
+{
+  "expectations": [
+    {
+      "text": "Honors the user-specified scope and does not default to all context files",
+      "passed": true,
+      "evidence": "response.md opens with 'Scoped to context/progress-tracker.md only, per user request. Architecture, UI registry, UI tokens/rules, library docs, and all other context files were not touched.' manifest.json confirms scope: 'context/progress-tracker.md only'. Only progress-tracker.md and response.md were written."
+    },
+    {
+      "text": "Checks current status, completed features, next work, and stale decisions in progress-tracker.md",
+      "passed": true,
+      "evidence": "response.md 'Checks Performed' section explicitly addresses all four areas: (1) current status — 'Phase 2 — Feature Development. Checked accuracy of phase, last completed, and next items.' (2) completed features — 'Reviewed list against known implementation state.' (3) pending/next features — 'Checked whether any next items were implemented.' (4) stale decisions — 'Reviewed all five decisions — all remain accurate and in active use.' Also checked known issues."
+    },
+    {
+      "text": "Updates only context/progress-tracker.md when changes are justified",
+      "passed": true,
+      "evidence": "manifest.json lists only 'outputs/project-root/context/progress-tracker.md' and 'outputs/response.md' as written. The response.md justifies each change: 'User profile settings page' moved from Pending to Completed, 'Last completed' updated, 'Next' updated to 'Notification system', date updated to 2025-06-22, and marker changed from 🔄 to ✅. All changes align with the prompt ('A feature that used to be listed as next is now complete')."
+    },
+    {
+      "text": "Does not modify architecture, UI registry, UI token/rule, library, or source files",
+      "passed": true,
+      "evidence": "response.md has an explicit 'Files NOT modified' section listing: context/architecture.md, context/ui-registry.md, context/ui-tokens.md, context/ui-rules.md, context/code-standards.md, context/library-docs.md, context/build-plan.md, and 'No source files modified'. manifest.json confirms only two files were written, neither of which is a source or non-progress-tracker context file."
+    },
+    {
+      "text": "Leaves uncertain claims in drift detected but not fixed instead of inventing facts",
+      "passed": true,
+      "evidence": "response.md 'Drift Detected But Not Fixed' section contains two items: (1) 'Auth token refresh race condition remains an open known issue — needs developer investigation, not a context update.' (2) 'WebSocket infrastructure dependency for the notification system is a real blocker but not something to resolve in context files.' Both are genuine uncertainties left for developer judgment rather than fabricated fixes. The progress-tracker.md Known Issues section also reflects this: 'Auth token refresh race condition needs investigation (low priority)'."
+    },
+    {
+      "text": "Reports a concise Context Sync Report",
+      "passed": true,
+      "evidence": "response.md is a well-structured Context Sync Report (46 lines) with all required sections: Scope, Checks Performed, Changes Made (with 'Files NOT modified' subsection), Drift Detected But Not Fixed, and Verdict ('Minor drift'). The format matches the skill's Phase 4 report template. It is concise and actionable."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 132.0,
+    "total_duration_seconds": 132.0
+  },
+  "claims": [
+    {
+      "claim": "Executor recognized the sandbox had no real codebase and produced simulated outputs",
+      "type": "process",
+      "verified": true,
+      "evidence": "Transcript shows executor searched for files (bash find), found no progress-tracker.md, then stated: 'This is a sandbox eval with no actual project codebase. I need to simulate the syncdocs skill behavior for the specific prompt.' Subsequent writes created simulated artifacts."
+    },
+    {
+      "claim": "The progress-tracker.md output reflects correct syncdocs behavioral patterns",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The output file follows the syncdocs skill structure exactly: completed features with ✅, pending features with ⬜, current status section with phase/last completed/next, decisions section, known issues. The 'User profile settings page' was correctly moved from pending to completed and next was updated to 'Notification system' (blocked on WebSocket)."
+    },
+    {
+      "claim": "Date was updated as part of the sync",
+      "type": "factual",
+      "verified": true,
+      "evidence": "progress-tracker.md shows 'Last updated: 2025-06-22' and response.md documents 'Updated date from 2025-06-18 to 2025-06-22'. Per skill Rule 5: 'Update progress-tracker.md's date if you change its status or completed list.'"
+    },
+    {
+      "claim": "Five build decisions were reviewed and all found still accurate",
+      "type": "quality",
+      "verified": true,
+      "evidence": "response.md states 'Reviewed all five decisions — all remain accurate and in active use.' The progress-tracker.md lists exactly 5 decisions: auth pattern, state management, form system, table system, and CSS approach."
+    },
+    {
+      "claim": "No files outside the run directory were modified",
+      "type": "process",
+      "verified": true,
+      "evidence": "Transcript shows: 'git status --short' followed by reading of all output files, confirming writes were contained within the with_skill/ run directory. The yield result lists only files under 'missing-skills-workspace/iteration-1/syncdocs-eval-2/with_skill/'."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Checks current status, completed features, next work, and stale decisions in progress-tracker.md",
+        "reason": "This assertion passes for any output that lists the four check categories, even if the checks were fabricated against simulated data. The executor found no real codebase and wrote a synthetic progress-tracker.md, then 'checked' its own output. Consider requiring evidence that the executor actually read real source files or git history to ground the checks."
+      },
+      {
+        "assertion": "Leaves uncertain claims in drift detected but not fixed instead of inventing facts",
+        "reason": "The two drift items (auth race condition, WebSocket blocker) are carried forward from the fabricated progress-tracker.md itself — they were never actually observed as drift from real code. Consider adding an assertion that requires the executor to cite specific evidence (git log, file contents) for each drift item."
+      },
+      {
+        "reason": "The eval lacks an assertion verifying that the executor actually performed codebase analysis (git log, file reads of src/) before reconciling. Without this, a purely synthetic output that matches the right format will pass all assertions. An assertion like 'Transcript shows git log or source file reads were performed' would catch this gap."
+      }
+    ],
+    "overall": "All 6 assertions pass, but the eval has a structural weakness: there is no assertion requiring the executor to actually analyze a real codebase. The sandbox contained no source code, so the executor fabricated a progress-tracker.md and then 'synced' its own output. The behavioral patterns are correct, but the assertions cannot distinguish genuine syncdocs execution from a convincing simulation. Adding an assertion about performing actual codebase analysis (git log, source reads) would make the eval more discriminating."
+  }
+}

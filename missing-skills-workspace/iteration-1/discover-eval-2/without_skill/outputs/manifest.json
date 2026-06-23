@@ -1,0 +1,11 @@
+{
+  "run_id": "discover-eval-2/without_skill",
+  "eval_id": 2,
+  "skill_name": "discover",
+  "mode": "baseline",
+  "files_written": [
+    "outputs/response.md"
+  ],
+  "files_created": [],
+  "repo_files_modified": []
+}
