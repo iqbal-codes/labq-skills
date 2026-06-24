@@ -4,73 +4,98 @@
     {
       "id": 1,
       "prompt": "I want to add a 'duplicate project' feature. Users should be able to clone an existing project with all its tasks and members. Where should it live?",
-      "expected_output": "Routes through Step 1 (context), Step 2 (language alignment: project, task, member, duplicate), Step 3 (decisions: deep vs shallow clone, naming collision, permissions), Step 4.5 (spawns challenge subagent, addresses or surfaces Showstoppers), Step 4.6 (self-review), Step 4.7 (Design Summary + Risk Register + stop). Does NOT draft the implementation plan, write to docs/plans/, or present the execution mode menu in the same turn.",
+      "expected_output": "Routes through Step 1 (context), Step 2 (language alignment: project, task, member, duplicate), Step 3 (decisions: deep vs shallow clone, naming collision, permissions), Step 4 ('Blueprint ready'), Step 4.5 (write the design doc to docs/designs/<slug>-design.md with Status, Language, Decisions, Assumptions, Out of scope, What we are building), Step 4.6 (single pressure-test pass — subagent reads the design file directly, returns Risk Register), Step 4.7 (inline-edits the design file based on findings, appends Risk Register, updates Status), Step 4.8 (spec self-review), Step 4.9 (Design Review Gate — chat reply names the file path and current Status, hands control back, STOPS). Does NOT draft the plan, write to docs/plans/, or present the execution mode menu in the same turn. Does NOT re-spawn the subagent.",
       "files": [],
       "expectations": [
         "Asks language-alignment questions before proposing implementation",
         "Surfaces at least 3 meaningful decisions (data ownership, naming, permissions, etc.)",
-        "Spawns a challenge subagent (Step 4.5) before presenting the design to the developer",
-        "Addresses resolvable Showstoppers OR surfaces unresolvable ones as 'Open Showstoppers' in the handoff",
-        "At Step 4.7 produces a Design Summary with Risk Register appended and stops — does NOT draft the plan in the same turn",
-        "Explicitly hands control back with a phrase like 'design ready for review' or 'awaiting design approval'",
-        "Does NOT present the implementation plan or execution mode menu before the developer approves the design",
-        "Does NOT write to docs/plans/ before the developer approves the design"
+        "Writes the design doc to docs/designs/ as the first action of the design phase (Step 4.5), BEFORE the pressure-test runs",
+        "Design file includes a ## Status block, Language, Decisions, Assumptions, Out of scope, and a one-paragraph 'What we are building' summary",
+        "Chat reply after writing the design file names the path and gives a one-line summary — does NOT paste the design contents",
+        "Spawns the challenge subagent AFTER the design doc is written; the subagent reads the file directly (Step 4.6, single pass only)",
+        "Inline-edits the design file based on the Risk Register (Step 4.7) — not a chat-only revision",
+        "After pressure-test, appends the Risk Register to the design file and updates the ## Status block to 'DRAFT — awaiting design approval' or 'OPEN SHOWSTOPPERS — awaiting design approval'",
+        "Does NOT re-spawn the subagent in a loop — single pass only",
+        "At Step 4.9 hands control back with a phrase like 'design ready for review at <path>'",
+        "Does NOT draft the plan, write to docs/plans/, or present the execution mode menu in the same turn"
       ]
     },
     {
       "id": 2,
       "prompt": "Tiny typo fix: the 'Logiin' heading should be 'Login'.",
-      "expected_output": "Skips architect entirely. Notes it's a trivial fix and proceeds without a multi-step plan, language alignment, challenge subagent, or execution mode menu.",
+      "expected_output": "Skips architect entirely. Notes it's a trivial fix and proceeds without a multi-step plan, language alignment, design doc, pressure-test, or execution mode menu.",
       "files": [],
       "expectations": [
         "Does NOT run Steps 1-6 of architect",
         "Recognizes this as a one-line fix and skips the skill",
         "Does NOT ask language-alignment questions or propose multi-file changes (negated mentions are OK)",
         "May mention to just make the change",
-        "Does NOT spawn a challenge subagent (it would be wasted work for a typo)"
+        "Does NOT write a design doc or spawn a challenge subagent (it would be wasted work for a typo)"
       ]
     },
     {
       "id": 3,
       "prompt": "We need to add role-based access control across the app. 6 user roles, ~40 protected routes, complex permission inheritance. Will take weeks.",
-      "expected_output": "Recognizes the scope and triggers persistence mode (Step 5.5). Surfaces many decisions. Spawns challenge subagent and resolves Showstoppers. Reaches Step 4.7 with a Design Summary + Risk Register. STOPS and waits for design approval. As the FIRST action of persistence mode, writes the design file to docs/designs/<slug>-design.md with the Risk Register appended and a ## Status block. The chat reply points to the file path; it does NOT paste the full design. STOPS AGAIN and waits. Does NOT write the plan file.",
+      "expected_output": "Routes through Steps 1-4 of the architect skill. Writes the design doc to docs/designs/<slug>-design.md as the first action of the design phase. Runs a single pressure-test pass on the file, inline-edits based on findings, and reaches Step 4.9 (Design Review Gate) with the file on disk. The chat reply names the design file path and current ## Status; it does NOT paste the full design. STOPS and waits for design approval. Does NOT write the plan file in the same turn.",
       "files": [],
       "expectations": [
-        "Recognizes this is large enough to warrant persistence mode",
-        "Spawns challenge subagent and resolves Showstoppers before presenting the design",
-        "Reaches Step 4.7 with a Design Summary + Risk Register and stops before writing any plan",
-        "Writes the design file to docs/designs/ as the first action of Step 4.7 (chat reply points to the file, does not paste full design)",
-        "Design file includes language, decisions, assumptions, Risk Register, and a ## Status block",
-        "Plan file is NOT written in the same turn as the design file",
         "Surfaces decisions about RBAC model (role hierarchy, permission inheritance, route guard placement, etc.)",
+        "Writes the design file to docs/designs/ as the first action (Step 4.5), BEFORE the pressure-test runs",
+        "Runs a single pressure-test pass on the file (Step 4.6); subagent reads the file directly",
+        "Inline-edits the design file based on the Risk Register (Step 4.7)",
+        "Reaches Step 4.9 with the design file on disk, Risk Register appended, ## Status set, and stops before writing any plan",
+        "Chat reply points to the design file path with current Status; does NOT paste the full design",
+        "Design file includes Status, Language, Decisions, Assumptions, Out of scope, Risk Register, and a What-we-are-building summary",
+        "Plan file is NOT written in the same turn as the design file",
         "Uses delta notation or acknowledges that future updates will use ADDED/MODIFIED/REMOVED markers",
-        "Does NOT try to plan the whole thing inline in one chat response"
+        "Does NOT re-spawn the subagent in a loop"
       ]
     },
     {
       "id": 4,
       "prompt": "Add a 'login with Google' button to the homepage. Use OAuth. We already have user accounts.",
-      "expected_output": "The model should align on language, surface a design, and the challenge subagent should catch an obvious hole — likely that the design doesn't address: token storage/session strategy, what happens to existing user accounts when they first log in via Google (account linking), logout flow, or revocation. The challenge subagent's Showstoppers (or at least Concerns) section should flag at least one of these. The model then either addresses the showstopper in a revised design OR the final Risk Register shows it as a Concern the developer should know about.",
+      "expected_output": "The model aligns on language, surfaces a design, and writes the design doc to docs/designs/<slug>-design.md BEFORE the pressure-test runs. The pressure-test (single pass) should catch an obvious hole — likely that the design doesn't address: token storage/session strategy, what happens to existing user accounts when they first log in via Google (account linking), logout flow, or revocation. The model then inline-edits the design file to address the finding (resolvable case) OR the final Risk Register shows it as an Open Showstopper / Concern the developer can see in the file.",
       "files": [],
       "expectations": [
-        "Model produces a Design Summary covering OAuth integration",
-        "Spawns a challenge subagent and the resulting Risk Register is visible in the output",
-        "The Risk Register flags at least one of: account linking strategy, session/token storage, logout, or revocation handling",
-        "If the showstopper is real, the model either revises the design or the final register has it as a Concern that the developer can see",
-        "Does NOT just rubber-stamp the OAuth design without flagging the account-linking or session concerns"
+        "Writes the design doc to docs/designs/ BEFORE the pressure-test runs",
+        "Pressure-test Risk Register (visible in the design file) flags at least one of: account linking strategy, session/token storage, logout, or revocation handling",
+        "If the showstopper is resolvable, the model inline-edits the design file to address it",
+        "If not resolvable, the model adds an Open Showstoppers section to the design file with Options (a)/(b)/(c) for the developer",
+        "Concerns stay in the Risk Register inside the design file for the developer's awareness",
+        "Does NOT just rubber-stamp the OAuth design without flagging the account-linking or session concerns",
+        "Does NOT paste the design contents in the chat — only the file path"
       ]
     },
     {
       "id": 5,
       "prompt": "Add a 'user profile page' at /users/:id that shows the user's name, avatar, bio, and recent activity. We use Postgres for storage and React for the frontend.",
-      "expected_output": "The model aligns on language, surfaces decisions, and a challenge subagent is spawned. The subagent should produce a Showstopper or Concern about 'recent activity' — what counts as activity, where it comes from, how far back, performance implications, N+1 queries on profile loads. Because the answer IS in scope (model can decide on a reasonable interpretation), the model should either revise the design to scope 'recent activity' explicitly OR the final Risk Register has it as a Concern. Tests the 'showstopper loop, resolvable case' path.",
+      "expected_output": "The model aligns on language, surfaces decisions, and writes the design doc to docs/designs/<slug>-design.md BEFORE the pressure-test runs. The pressure-test (single pass) should produce a Showstopper or Concern about 'recent activity' — what counts as activity, where it comes from, how far back, performance implications, N+1 queries on profile loads. Because the answer IS in scope (model can decide on a reasonable interpretation), the model inline-edits the design file to scope 'recent activity' explicitly OR the final Risk Register in the file has it as a Concern with a one-line scoping decision. Tests the 'inline-edit resolves the showstopper' path.",
       "files": [],
       "expectations": [
-        "Model produces a Design Summary covering user profile page",
-        "Spawns a challenge subagent and the resulting Risk Register is visible",
-        "The Risk Register flags at least one concern about 'recent activity' (scope, source, performance, N+1)",
-        "The model either revises the design to address the concern OR lists it as a Concern in the final register with a one-line scoping decision",
-        "Does NOT just accept 'recent activity' as a black box without challenge"
+        "Writes the design doc to docs/designs/ BEFORE the pressure-test runs",
+        "The Risk Register in the design file flags at least one concern about 'recent activity' (scope, source, performance, N+1)",
+        "The model inline-edits the design file to address the concern OR lists it as a Concern in the final Risk Register with a one-line scoping decision",
+        "Does NOT just accept 'recent activity' as a black box without challenge",
+        "Does NOT re-spawn the subagent — single pass only",
+        "Does NOT paste the design contents in the chat — only the file path"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "After the design for 'duplicate project' has been approved, draft the implementation plan.",
+      "expected_output": "Routes through Step 5 (write the plan doc to docs/plans/<slug>-plan.md, mirroring language/decisions/assumptions from the design doc, with ordered Implementation steps, Files touched, and a ## Status block set to 'DRAFT — awaiting pressure-test'). Runs a single pressure-test pass on the plan file (Step 5.1) — subagent reads the file directly and looks for gaps in implementation steps. Inline-edits the plan file based on findings (Step 5.2), appends Risk Register, updates ## Status to 'DRAFT — awaiting plan approval' or 'OPEN SHOWSTOPPERS — awaiting plan approval'. Reaches Step 5.3 (Plan Review Gate) and STOPS. The chat reply names the plan file path and current Status; it does NOT paste the full plan.",
+      "files": [],
+      "expectations": [
+        "Writes the plan doc to docs/plans/ as the first action of the plan phase (Step 5), BEFORE the pressure-test runs",
+        "Plan file mirrors Language, Decisions, Assumptions, and Out-of-scope from the design doc",
+        "Plan file includes ordered Implementation steps, a flat Files touched list, and a ## Status block",
+        "Updates the design file's ## Status block to 'DESIGN APPROVED — plan at docs/plans/<file>.md'",
+        "Runs a single pressure-test pass on the plan file (Step 5.1); subagent reads the file directly",
+        "Inline-edits the plan file based on the Risk Register (Step 5.2) — not a chat-only revision",
+        "After pressure-test, appends the Risk Register to the plan file and updates the ## Status block",
+        "Does NOT re-spawn the subagent — single pass only",
+        "At Step 5.3 hands control back with a phrase like 'plan ready for review at <path>'",
+        "Does NOT start implementation or present the execution mode menu in the same turn"
       ]
     }
   ]

@@ -100,11 +100,11 @@ Skip the skills and proceed using the lightest approach that respects `context/`
 This section defines the canonical sequence for each trigger. Announce each step as you go.
 
 ### New feature or behavior change
-`architect` (with persistence mode when warranted) → implement (with `impeccable` for UI parts, and `imprint` after the UI lands to capture the visual patterns) → `review` → `syncdocs` → `remember`
+`architect` → implement (with `impeccable` for UI parts, and `imprint` after the UI lands to capture the visual patterns) → `review` → `syncdocs` → `remember`
 
 If the feature has UI: load `impeccable` *during* implementation (not after `review`) — the UI is part of the feature, not a polish pass. The chain becomes: `architect` → implement (with `impeccable` for UI parts) → `review` → `syncdocs` → `remember`. See the UI chain below for the polish-only case.
 
-**Architect persistence mode:** `architect` decides whether to write the design and plan to disk (its own rules in Step 5.5). The 3+ files / 2+ packages rule is the common case but not the only trigger — hard-to-reverse decisions, future-session continuity, and explicit developer requests also count. `using-skills` defers to `architect` for the actual call; the design goes to `docs/designs/YYYY-MM-DD-<feature-slug>-design.md` and the plan to `docs/plans/YYYY-MM-DD-<feature-slug>-plan.md` (in that order, with the two-phase gate: design approval, then plan approval).
+**Architect writes to disk by default.** Every `architect` run produces a design file at `docs/designs/YYYY-MM-DD-<feature-slug>-design.md` and a plan file at `docs/plans/YYYY-MM-DD-<feature-slug>-plan.md`, in that order, with two human gates (design approval, then plan approval). The design and plan go through a single pressure-test pass each, with inline edits to the files based on findings — no chat-only summaries. `using-skills` defers to `architect` for the file format and gate wording.
 
 ### Bug, test failure, or unexpected behavior
 `recover` (finds root cause before any fix) → fix → `review (lite)` → `syncdocs`

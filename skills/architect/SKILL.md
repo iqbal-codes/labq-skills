@@ -30,7 +30,7 @@ Before saying anything, take stock of what already exists:
 
 Trigger this when the feature involves an unfamiliar library, a recently-released version, a deprecated API, a framework with breaking changes in the last 12 months, or anything where the project's `context/library-docs.md` doesn't already pin the version. Skip it for well-known territory (e.g., "add a Postgres column" or "wire a React form") — the cost of research has to be worth it.
 
-**If research can't find authoritative information** (no docs, conflicting sources, or the library is unmaintained), surface the uncertainty as an Open Showstopper in the Risk Register (Step 4.5) with what you did and didn't find. Do not paper over the gap with a confident guess.
+**If research can't find authoritative information** (no docs, conflicting sources, or the library is unmaintained), surface the uncertainty as an Open Showstopper in the Risk Register (Step 4.6) with what you did and didn't find. Do not paper over the gap with a confident guess.
 
 Do not ask the developer about anything already clearly answered by existing documentation. A good senior engineer does their homework before the meeting.
 
@@ -90,15 +90,47 @@ When you are done, say:
 Blueprint ready.
 ```
 
-## Step 4.5 — Pressure-Test via Challenge Subagent
+## The Document-First Rule
 
-Self-review at this stage has a known failure mode: the model that drafted the design is the same one reviewing it, so the same blind spots pass through unchecked. A second pass from a model with different weights, given the design but not the prior conversation, catches what self-review misses.
+From this point forward, every artifact lives in a file under `docs/`, not in the chat. The chat reply is a pointer to the file (a path and a one-line summary), not the artifact itself. This rule has three reasons:
 
-**Before presenting the design to the developer, spawn a challenge subagent.**
+1. **Pressure-test needs something concrete to read.** A chat-only summary is too easy to silently drift from the design; a file on disk is the single source of truth.
+2. **Inline edits after the pressure-test should land in the document**, not in a transient reply. Future sessions and reviewers read the file, not the chat.
+3. **The design and the plan are both first-class artifacts** — neither is inline-only anymore. They go through the same write → pressure-test → edit gate.
+
+**Where to write:**
+
+- `docs/designs/YYYY-MM-DD-<feature-slug>-design.md` — language, decisions, assumptions, scope boundary. What we agreed to build and why.
+- `docs/plans/YYYY-MM-DD-<feature-slug>-plan.md` — ordered implementation steps, files touched, verification commands.
+
+Create the directories if they don't exist. The chat reply after writing each file is one or two sentences pointing at the path — never a paste of the full file.
+
+## Step 4.5 — Write the Design Doc
+
+First action of the design phase, not a follow-up. Take what was agreed in Steps 1–4 and put it on disk.
+
+Write `docs/designs/YYYY-MM-DD-<feature-slug>-design.md` with these sections:
+
+- `## Status` — top of file, set to `DRAFT — awaiting pressure-test`
+- `## Language` — terms and agreed definitions from Step 2
+- `## Decisions` — each decision from Step 3 with the reasoning behind it
+- `## Assumptions` — anything you assumed but did not confirm
+- `## Out of scope` — adjacent work deferred for later
+- `## What we are building` — one paragraph summary for reviewers
+
+In the chat reply, name the file path and write one sentence about what it covers. Do not paste the file content. Then continue to Step 4.6 in the same workflow — the file is the input to the pressure-test.
+
+If the developer changes course during `architect` and asks to skip the separate plan gate, follow the compressed path in **When the Developer Said "Just Do It"** below.
+
+## Step 4.6 — Pressure-Test the Design Doc (single pass)
+
+Self-review at this stage has a known failure mode: the model that drafted the design is the same one reviewing it, so the same blind spots pass through unchecked. A second pass from a model with different weights, given the design file but not the prior conversation, catches what self-review misses.
+
+**Spawn one challenge subagent. One pass. No re-spawn loop on showstoppers.**
 
 The subagent receives:
 1. The original developer prompt (what was asked for)
-2. The Design Summary (what you proposed)
+2. A Read of the design file at its full path — the subagent reads it directly, you do not paste the contents
 3. Repo context — file paths and conventions it needs to ground its challenges
 
 The subagent does NOT receive the developer's prior answers to language or decisions, and it has read-only access (no edits, no writes).
@@ -122,149 +154,126 @@ All three sections are always present. Empty sections are explicit (`### Showsto
 
 **If a real subagent is not available** (environment without `task` tool, or restricted context), run the challenge as a self-administered pass — same prompt contract, same output format — and flag the fallback in the Risk Register header. See `references/challenge-subagent.md` for the full fallback protocol.
 
-Full spec lives in `references/challenge-subagent.md`.
+**One pass only.** Do not loop on Showstoppers. The subagent is a critic, not a co-author — its job is to surface findings, yours is to act on them in Step 4.7. Re-running it rarely uncovers anything new and doubles the wall-clock time of every plan.
 
-**Loop on Showstoppers — two outcomes:**
+## Step 4.7 — Main-Agent Triage and Inline Edit
 
-1. **You can address them.** If the showstopper is something you can resolve right now (e.g., you just made an unsupported claim you can verify, or a design decision can be revised without more input), revise the design and re-spawn the challenge subagent. Loop until Showstoppers is empty.
+The reviewer subagent only reviews. It does not rewrite the document. You (the architect model) read the Risk Register and decide the next move.
 
-2. **You cannot address them.** If the showstopper requires information you don't have (e.g., the schema is unverified, the developer hasn't confirmed a load-bearing assumption, the design depends on a fact outside this session), do NOT silently leave the showstopper in the register. Surface it explicitly in the Design Summary handoff:
+**For each finding in the register:**
 
+1. **Resolvable now** — a finding you can address with information already in scope (an unsupported claim you can verify, a vague requirement you can sharpen, a decision that can be revised without more input). Edit the design file directly: clarify the section, add a missing constraint, or restate a decision. Use the delta markers from the bottom of this skill (`MODIFIED 2026-06-25` etc.) when the change is non-trivial.
+2. **Needs developer input** — a finding that requires clarification the repo and current discussion do not provide. Ask one focused follow-up question in the chat, then update the design file after the developer answers.
+3. **Cannot be resolved in this session** — a finding that depends on information or authority outside this session. Do NOT silently leave it in the register. Edit the design file to add an `## Open Showstoppers` section above the Risk Register, with each item formatted as:
    ```
-   ## Open Showstoppers (need your input)
-   - [Showstopper] — I cannot resolve this without [what you need]. Options: (a) [way to resolve], (b) [alternative], (c) proceed with this risk acknowledged.
+   ### [Showstopper title]
+   I cannot resolve this without [what you need]. Options: (a) [way to resolve], (b) [alternative], (c) proceed with this risk acknowledged.
    ```
 
-   The developer reviews these alongside the Design Summary. Concerns and Acceptable do not block — they are visible to the developer for awareness.
+Concerns and Acceptable notes do not block — they stay in the Risk Register for the developer's awareness. Inline-edit the design doc to address the actionable ones, leave the rest in the register.
 
-**Once Showstoppers is empty (or the human has acknowledged the open ones):** append the Risk Register to the Design Summary and hand off to the developer at the gate (Step 4.7). Do not let the challenge subagent's output become the design — you (the architect model) remain the author. The subagent is a critic, not a co-author.
+After all findings are handled, append the Risk Register (with any inline edits reflected in the document above it) to the design file under a `## Risk Register` heading. Update the `## Status` block at the top:
 
-## Step 4.6 — Spec Self-Review
+- All showstoppers resolved: `DRAFT — awaiting design approval`
+- Any showstopper still open: `OPEN SHOWSTOPPERS — awaiting design approval`
 
-Before writing the implementation plan, scan the agreed design for problems:
+In the chat reply, confirm the file path and the new status. Do not re-spawn the subagent unless the developer explicitly asks for another review pass.
+
+## Step 4.8 — Spec Self-Review
+
+Before the human reviews the design, scan the file one more time for problems the pressure-test may have missed:
 
 1. **Placeholders** — any "TBD", "TODO", vague requirements. Fix them now.
 2. **Internal consistency** — do decisions contradict each other?
 3. **Scope check** — focused enough for a single plan, or does it need split?
 4. **Ambiguity** — could any requirement be read two ways? Pick one and make it explicit.
 
-If any check fails: fix inline, do not present the plan.
+If any check fails, edit the file inline and re-set the `## Status` block. Do not present a plan yet.
 
-## Step 4.7 — Design Review Gate (HUMAN-IN-THE-LOOP)
+## Step 4.9 — Design Review Gate (HUMAN-IN-THE-LOOP)
 
-The design is settled, the challenge subagent has cleared Showstoppers, the spec has been self-reviewed. The plan is NOT yet written. Stop and let the developer review the design before you draft any implementation steps.
+The design is on disk, the pressure-test has run, the inline edits are applied, the spec has been self-reviewed, the status block is set. STOP. The plan is NOT yet written. Let the developer review the design file before any implementation steps are drafted.
 
-Present a compact Design Summary, with the Risk Register appended, and explicitly hand control back:
-
-```
-## Design Summary — [Feature Name]
-
-### Language we agreed on
-- [Term]: [agreed definition]
-- [Term]: [agreed definition]
-
-### Decisions made
-- [Decision]: [what was decided and the reasoning]
-- [Decision]: [what was decided and the reasoning]
-
-### Assumptions
-- [Anything you assumed that was not explicitly confirmed]
-
-### Out of scope (for this plan)
-- [Adjacent work the developer might expect but is intentionally deferred]
-
-## Risk Register
-[appended verbatim from the challenge subagent]
-```
-
-Then say exactly:
+In the chat reply, give the file path, the current `## Status` value, and a one-line summary of what the design covers. Do not paste the file. Then say exactly:
 
 ```
-Design ready for review. Reply with "design looks good" (or call out
-what to change) and I will draft the implementation plan.
+Design ready for review at <path>. Reply with "design looks good"
+(or call out what to change) and I will draft the implementation plan.
 ```
 
 **Do not draft the plan in the same turn. Do not write to `docs/plans/`. Do not present the execution mode menu.** The plan is downstream of the design being approved — drafting it now defeats the purpose of the gate.
 
-If the developer pushes back, treat it as a new round: revise language, revise decisions, re-run the challenge subagent, re-present. Only proceed to Step 5 after explicit approval.
+If the developer pushes back, update the design file, re-set the status, and re-present. Do not automatically re-run the reviewer subagent. A second review pass happens only if the developer explicitly asks for one.
 
-If the developer says "just do it, skip the plan" — honor that and jump to Step 6 with a one-line summary of what is being built.
+If the developer changes course during `architect` and says "just do it, skip the plan" — follow the combined-file flow in **When the Developer Said "Just Do It"** below.
 
-After the developer approves the design in Step 4.7, write a clear implementation plan based on everything discussed.
+## Step 5 — Write the Plan Doc
+
+After the developer approves the design, write `docs/plans/YYYY-MM-DD-<feature-slug>-plan.md` based on the agreed design. The plan file is the implementation contract: a different reviewer (a subagent, a human in a future session, or a separate executor) must be able to run it without re-reading the chat.
+
+Write the plan with these sections:
+
+- `## Status` — top of file, set to `DRAFT — awaiting pressure-test`
+- `## What we are building` — one paragraph summary (mirror from the design doc)
+- `## Language` — terms and agreed definitions (mirror from the design doc)
+- `## Decisions` — decisions and reasoning (mirror from the design doc)
+- `## Assumptions` — anything not explicitly confirmed (mirror from the design doc)
+- `## Out of scope` — deferred work (mirror from the design doc)
+- `## Implementation steps` — ordered list of concrete steps. Each step names the files it touches, the change it makes, and (when relevant) the verification command.
+- `## Files touched` — flat list of paths the implementation will create or modify.
+
+Update the design file's `## Status` block to `DESIGN APPROVED — plan at docs/plans/<file>.md`.
+
+In the chat reply, name the plan file path and one sentence about scope. Do not paste the file. Then continue to Step 5.1 in the same workflow.
+
+## Step 5.1 — Pressure-Test the Plan Doc (single pass)
+
+Same shape as Step 4.6, but the subagent reads the plan file directly and looks for gaps in the implementation steps: missing edge cases, ambiguous steps, dependencies the plan doesn't acknowledge, steps that don't have a verification command, and decisions in the design that the plan forgot to carry through.
+
+One pass. No re-spawn loop. The subagent returns a Risk Register in the same three-section shape.
+
+## Step 5.2 — Main-Agent Triage and Inline Edit
+
+Same control pattern as Step 4.7. The reviewer subagent only returns a Risk Register; you decide what to do next and update the file yourself.
+
+- **Resolvable now:** clarify the step, add a missing file, sharpen a verification command, fix a missing edge case. Use the delta markers when the change is non-trivial.
+- **Needs developer input:** ask one focused clarification question, then update the plan file after the answer.
+- **Cannot be resolved in this session:** add a `## Open Showstoppers` section above the Risk Register, with the same Options (a)/(b)/(c) format.
+
+After addressing, append the Risk Register to the plan file under `## Risk Register`. Update the `## Status` block:
+
+- All showstoppers resolved: `DRAFT — awaiting plan approval`
+- Any showstopper still open: `OPEN SHOWSTOPPERS — awaiting plan approval`
+
+## Step 5.3 — Plan Review Gate (HUMAN-IN-THE-LOOP)
+
+The plan is on disk, the pressure-test has run, the main-agent edits are applied, the status block is set. STOP. The implementation is NOT yet started. Let the developer review the plan file before any code is written.
+
+In the chat reply, give the plan file path, the current `## Status` value, and a one-line summary. Do not paste the file. Then say exactly:
 
 ```
-## Implementation Plan — [Feature Name]
-
-### What we are building
-[One clear paragraph describing exactly what will be built]
-
-### Language we agreed on
-- [Term]: [agreed definition]
-- [Term]: [agreed definition]
-
-### Decisions made
-- [Decision]: [what was decided and the reasoning]
-- [Decision]: [what was decided and the reasoning]
-
-### Assumptions
-- [Anything you assumed that was not explicitly confirmed]
-
-### How to build it
-[A concise ordered list of implementation steps]
+Plan ready for review at <path>. Reply with "plan looks good" (or
+call out what to change) and I will move to execution mode.
 ```
 
-Present the plan to the developer. Wait for them to confirm before anything gets built.
+**Do not start implementation in the same turn. Do not present the execution mode menu yet.** The execution mode is downstream of the plan being approved.
 
-Only after explicit confirmation does implementation begin.
+If the developer pushes back, update the plan file, re-present, and wait. Do not automatically re-run the reviewer subagent. A second review pass happens only if the developer explicitly asks for one.
 
-**If the plan includes UI work,** the implement step should load `impeccable` for the UI portion. `impeccable` produces ready-to-ship design code (tokens, components, a11y, motion); the rest of the implementation is normal coding. After the UI lands, `imprint` captures the new visual patterns into `context/ui-registry.md`. Treat UI as a first-class part of the plan, not a polish pass to add at the end.
+## When the Developer Said "Just Do It"
 
-## Step 5.5 — Persistence Mode (for non-trivial work)
+This section applies only when `architect` is already in progress and the developer changes course mid-flow. If they said "no plan, just do it" at the start, `architect` should have been skipped under **When NOT to Use**.
 
-The inline plan above is fine for small features. For anything non-trivial, write the design and plan to disk so the next session (or a human reviewer) can pick up where you left off. **Persistence follows the same two-phase gate as the inline flow: write the design first, wait for approval, then write the plan.**
+If the developer explicitly says "just do it, skip the plan" after the design work has already started, collapse the two phases:
 
-**Trigger persistence when ANY of these are true:**
-- The feature touches 3+ files or 2+ packages
-- A future agent might resume this work in a new session
-- Decisions made here would be hard to reverse (data model, auth boundary, new dependency)
-- The developer asks for a plan they can review/share
+1. Write one combined file at `docs/designs/YYYY-MM-DD-<slug>-design.md` that holds both the design sections and the implementation steps, with `## Status: COMBINED — just do it`.
+2. Run one pressure-test pass on the combined file.
+3. Inline-edit based on findings.
+4. Hand off to Step 6 with a one-line summary. The combined file is the artifact; the developer can still read it before execution starts.
 
-**When NOT to persist:**
-- Single-file fix or refactor
-- Bug fix with a clear root cause (use `recover` instead)
-- The developer explicitly says "just do it"
+## Delta Notation for Changes Mid-Build
 
-**Where to write:**
-- `docs/designs/YYYY-MM-DD-<feature-slug>-design.md` — language, decisions, assumptions, scope boundary. What we agreed to build and why.
-- `docs/plans/YYYY-MM-DD-<feature-slug>-plan.md` — ordered implementation steps, files touched, verification commands.
-
-**Phase A — write the design only:**
-
-In persistence mode, the design file is the primary artifact. The chat reply is a pointer to it, not the artifact itself.
-
-**When you reach Step 4.7 in persistence mode, do the following as your first action — not as a follow-up:**
-1. Create `docs/` directory if it doesn't exist
-2. Write `docs/designs/YYYY-MM-DD-<feature-slug>-design.md` with:
-   - Language alignment (terms and agreed definitions)
-   - Decisions and their reasoning
-   - Assumptions and out-of-scope items
-   - The Risk Register from the challenge subagent (appended verbatim, with the showstopper loop closed or with Open Showstoppers surfaced)
-   - A `## Status` block at the top reading `DESIGN APPROVED — awaiting plan`
-3. In your chat reply, show the design file path and a brief summary — do not paste the full design in the chat
-
-If the inline Step 4.7 review surfaced showstoppers that were addressed, the Risk Register in the design file reflects the post-revision register (the one with empty Showstoppers, or with Open Showstoppers listed for the human).
-
-**Do not write `docs/plans/`.** Wait for explicit developer approval of the design file before proceeding to Phase B.
-
-**Phase B — write the plan:**
-
-Only after the developer approves the design file, write `docs/plans/YYYY-MM-DD-<feature-slug>-plan.md` with the ordered implementation steps, files touched, and verification commands. Update the design file's `## Status` block to `DESIGN APPROVED — plan at docs/plans/...`. Present both paths and wait for confirmation before any code is written.
-
-If the developer requests changes, edit the design file, re-run the challenge subagent on the revised design, re-present, and re-wait. The plan file does not exist until Phase B is triggered — that is the whole point.
-
-**Delta notation for changes mid-build:**
-
-When updating an existing design or plan doc (because the feature evolved mid-build), mark sections as `ADDED`, `MODIFIED`, or `REMOVED` so future sessions can see what changed without diffing whole files:
+When updating an existing design or plan doc (because the feature evolved mid-build or a pressure-test finding landed), mark sections as `ADDED`, `MODIFIED`, or `REMOVED` so future sessions can see what changed without diffing whole files:
 
 ```markdown
 ## Data model — MODIFIED 2026-06-25
@@ -276,10 +285,10 @@ When updating an existing design or plan doc (because the feature evolved mid-bu
 
 ## Step 6 — Choose Execution Mode
 
-After the developer confirms the plan, present the execution mode menu. Always present exactly these four options, with Parallel subagents as the default recommendation.
+After the developer approves the plan file, present the execution mode menu. Always present exactly these four options, with Parallel subagents as the default recommendation.
 
 ```
-Plan confirmed. Choose execution mode:
+Plan approved at <path>. Choose execution mode:
 
 1. Parallel subagents (Recommended) — dispatch one fresh subagent per
    independent task, review each slice, run a final integration review.
@@ -288,8 +297,9 @@ Plan confirmed. Choose execution mode:
 2. Sequential same-session — execute tasks one by one here. Use when
    tasks share state or are tightly coupled.
 
-3. Plan-only — save plan to docs/plans/, stop, resume in a fresh
-   session. Use when the work does not fit one session.
+3. Plan-only — the plan and design are already on disk; commit them
+   (if the project uses version control) and stop. Resume in a fresh
+   session.
 
 4. Detailed handoff — invoke writing-plans to produce a step-by-step
    executor plan (every command, every test, every commit). For human or
@@ -303,11 +313,8 @@ Wait for the developer to choose before proceeding.
 ### Mode behavior
 
 - **Option 1 (Parallel):** announce "Using `dispatching-parallel-agents` to fan out the plan." Dispatch one subagent per task in a single tool batch. After each returns, run `review (parallel mode)` — see `review` skill for the per-slice + integration pattern. End with a full integration review.
-
 - **Option 2 (Sequential):** announce "Executing sequentially in this session." Create a todo for each plan task. Run them in order. After each, run `review (lite)` if the task changed more than one file.
-
-- **Option 3 (Plan-only):** write the plan to `docs/plans/YYYY-MM-DD-<slug>-plan.md`, commit it, announce the path, stop. Do not start implementation.
-
+- **Option 3 (Plan-only):** the design and plan are already written under `docs/`. Optionally commit them so the next session can `remember restore`. Announce both paths and stop. Do not start implementation.
 - **Option 4 (Detailed handoff):** invoke `writing-plans` with the confirmed design + plan as input. Do not start implementation here.
 
 ## What This Session Is Not
