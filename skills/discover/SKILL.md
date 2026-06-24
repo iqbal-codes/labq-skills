@@ -81,8 +81,8 @@ You MUST create a task for each of these items and complete them in order:
 
 1. **Explore current project context** — inspect repo/docs/current assumptions
 2. **Classify discovery session** — greenfield, base-repo adaptation, reset, or uncertain scope
-3. **Offer visual companion** (if upcoming questions are likely visual) — own message only, no bundled question
-4. **Ask clarifying questions** — one at a time, focused on product/user/scope/constraints
+3. **Ask clarifying questions** — one at a time, focused on product/user/scope/constraints
+4. **Surface constraints and preferences** — capture forces that shape later architecture
 5. **Propose 2-3 candidate directions** — usually MVP framing, scope cuts, or stack direction with trade-offs
 6. **Present discovery sections** — product intent, users, flows, scope, constraints, gaps, next step; get user approval after sections
 7. **Write or update `context/project-overview.md`** — only after discovery framing is approved
@@ -96,9 +96,8 @@ You MUST create a task for each of these items and complete them in order:
 digraph discover {
     "Explore current project context" [shape=box];
     "Classify discovery session" [shape=box];
-    "Visual questions ahead?" [shape=diamond];
-    "Offer Visual Companion\n(own message, no other content)" [shape=box];
     "Ask clarifying questions" [shape=box];
+    "Surface constraints and preferences" [shape=box];
     "Propose 2-3 candidate directions" [shape=box];
     "Present discovery sections" [shape=box];
     "User approves discovery framing?" [shape=diamond];
@@ -108,11 +107,9 @@ digraph discover {
     "Recommend next skill" [shape=doublecircle];
 
     "Explore current project context" -> "Classify discovery session";
-    "Classify discovery session" -> "Visual questions ahead?";
-    "Visual questions ahead?" -> "Offer Visual Companion\n(own message, no other content)" [label="yes"];
-    "Visual questions ahead?" -> "Ask clarifying questions" [label="no"];
-    "Offer Visual Companion\n(own message, no other content)" -> "Ask clarifying questions";
-    "Ask clarifying questions" -> "Propose 2-3 candidate directions";
+    "Classify discovery session" -> "Ask clarifying questions";
+    "Ask clarifying questions" -> "Surface constraints and preferences";
+    "Surface constraints and preferences" -> "Propose 2-3 candidate directions";
     "Propose 2-3 candidate directions" -> "Present discovery sections";
     "Present discovery sections" -> "User approves discovery framing?";
     "User approves discovery framing?" -> "Present discovery sections" [label="no, revise"];
@@ -385,18 +382,6 @@ Default progression:
 - **No premature architecture** — discovery shapes product, not folder trees
 - **Get approval before transition** — discovery must be accepted before architecture starts
 
-## Visual Companion
-
-A browser-based companion for mockups, diagrams, and visual comparisons during discovery. Accepting it makes visuals available when useful; it does not mean every question goes through browser.
-
-**Offer it only if upcoming questions are likely visual.** Use this exact standalone message and nothing else:
-
-> "Some of what we're working on might be easier to explain if I can show it to you in a web browser. I can put together mockups, diagrams, comparisons, and other visuals as we go. This feature is still new and can be token-intensive. Want to try it? (Requires opening a local URL)"
-
-Do not combine that offer with clarifying questions or summaries. Wait for response first. If they decline, continue in text.
-
-If they accept, read:
-`skills/brainstorming/visual-companion.md`
 
 ## Final Reminder
 
