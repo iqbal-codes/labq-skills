@@ -2,9 +2,9 @@
 
 ## Purpose
 
-`AGENTS.md` is the project-level override file. It sits at the repo root and is loaded by the agent as **passive context** — always in scope, but not the entry point. The entry point for any non-trivial work is the `using-skills` skill.
+`AGENTS.md` is the project-level override file. It sits at the repo root and is loaded by the agent as passive context. Use it for project-local facts, constraints, and conventions — not as the workflow entry point.
 
-Its job is to record the project-specific rules that are not universal — the things this particular project has decided, that no other project would assume. Universal rules (verify-before-claim, branch lifecycle, HITL gates, destructive-action confirmation, the routing map, the chains) live in the skills themselves; `AGENTS.md` is only for the project-specific overrides.
+Its job is to record what this project has decided that other projects would not assume. Universal routing, chains, and shared guardrails live in the skills themselves; `AGENTS.md` is only for the project-specific overrides.
 
 ## When to create
 
@@ -32,9 +32,8 @@ These can be drafted as hypotheses and marked for confirmation if they are not o
 
 ## Suggested sections
 
-- Project entry point — `using-skills` is the entry point; this file is project context, not a router
 - Context read order — the 9-file order from `bootstrap`, or a project-specific override
-- Project-specific rules — overrides to the universal guards in `using-skills`
+- Project-specific rules — only project-local overrides, facts, and conventions
 - Current repo reality — the stack, the layout, the workspace boundary
 
 ## Starter template
@@ -42,15 +41,7 @@ These can be drafted as hypotheses and marked for confirmation if they are not o
 ```markdown
 # AGENTS.md
 
-Project context for this repository. The `using-skills` skill is the entry point for non-trivial work and operates independently of this file — it does not read or depend on `AGENTS.md`. This file is for humans, for context, and for project-specific overrides.
-
-If a project-specific rule is in conflict with a universal rule in `using-skills`, the project rule wins. If a rule is only in `using-skills`, it still applies here.
-
-## Process first
-
-`using-skills` is the entry point. Its routing map decides which specialized skill applies. Its chains section defines the canonical sequence for each trigger. Its universal guards (HITL gates, verify-before-claim, branch lifecycle, destructive-action confirmation) are the floor for this project.
-
-This file is **not** the entry point. `using-skills` is.
+Project context for this repository. Record only project-specific facts, constraints, and overrides here. Do not restate universal routing, skill chains, or guardrails from the shared skills.
 
 ## Context read order
 
@@ -68,16 +59,17 @@ Read these files in this exact order before implementation:
 
 If any file is missing or clearly stale, repair context first before trusting implementation work. Use `bootstrap` (refresh mode) or `syncdocs` (small drift) for this.
 
-`using-skills` delegates the read-order mechanic to `bootstrap`; the canonical 9-file order lives here in this project, not in `using-skills`.
+Use this section only when the project needs a concrete read order.
 
 ## Project-specific rules
 
-Universal rules (verification, branch lifecycle, HITL gates, testing discipline) are in `using-skills` and apply on top of these. The rules below are the project-specific overrides.
+List only project-specific overrides, facts, and conventions below. Do not repeat shared rules from `using-skills`.
 
 - [Add project-specific styling rules, e.g., "Use token-based styling from <UI library>; no hardcoded hex or raw palette classes."]
 - [Add package boundary rules, e.g., "Prefer existing package boundaries and shared utilities over new abstractions."]
 - [Add domain library list — frameworks / SDKs / tools that need a domain skill loaded before changes. Example: `hono`, `ai-sdk`, `mastra`, `better-auth`, `shadcn`.]
 - [Add test discipline, e.g., "E2E + targeted unit; no TDD mandate."]
+- [Add solution-quality posture, e.g., "Prefer the best correct maintainable solution over the cheapest-by-human-effort shortcut. Agent-assisted development makes iteration cheap, so optimize for quality, maintainability, and user value unless I explicitly ask for a temporary patch or narrower scope."]
 - [Add commit / branch conventions, e.g., "Conventional Commits; feature branches off `main`; squash-merge."]
 - [Add any rule that is project-specific and would not apply to other projects.]
 
